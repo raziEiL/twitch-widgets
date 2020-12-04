@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+main {
+    margin: 0 auto;
+    padding: 12px;
+    width: 760px;
+}
+
+p {
+    font-weight: 500;
+    font-size: 1.25em;
+    display: block;
+    margin: 0;
+}
+
+.information {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+}
+
+.data {
+    display: flex;
+}
+
+.space {
+    margin: 0 12px;
+}
+
+.progressBar {
+    display: flex;
+    height: 36px;
+}
+
+.bar-user-a {
+    background-color: #4DE94C;
+    width: 50%;
+}
+
+.bar-user-b {
+    background-color: #F60000;
+    width: 50%;
+}
+
+$border-radius: 6px;
+
+.border-left {
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+}
+
+.border-right {
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+.animation {
+    transition: width 2s;
+}
