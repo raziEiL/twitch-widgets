@@ -20,13 +20,15 @@ const htmlmin = require("gulp-htmlmin");
 const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
+const merge = require("merge-stream");
 // Список css классов (используются для js), которые игнорируются uncss
-const UNCSS_IGNORE = [];
+const UNCSS_IGNORE = [".hidden"];
 
 // Пути
 const ROOT = "./";
 const DIST = "dist/frontend/";
 const SRC = "src/frontend/";
+const JS_FILES = ["vote", "draw"];
 
 const PATH = {
     // готовые файлы после сборки
@@ -35,12 +37,11 @@ const PATH = {
         js: ROOT + DIST + "js",
         img: ROOT + DIST + "img",
         font: ROOT + DIST + "font",
-
     },
     // пути исходных файлов
     src: {
         css: ROOT + SRC + "scss/**/*.scss",
-        js: ROOT + SRC + "js/**/*.js",
+        js: ROOT + SRC + "js/",
         img: ROOT + SRC + "img/*",
         font: ROOT + SRC + "font/*",
         html: ROOT + SRC + "*.html"
@@ -85,7 +86,7 @@ gulp.task("build:html", () => {
 });
 
 gulp.task("clean", () => {
-    return del([ROOT + "dist"]);
+    return del([ROOT + DIST]);
 });
 
 gulp.task("build", gulp.series(["clean", "build:sass", "build:js", "build:img", "build:html", "build:font"]));
@@ -174,19 +175,18 @@ function sassCallback(production = false) {
  */
 // https://stackoverflow.com/questions/41043032/browserify-parseerror-import-and-export-may-appear-only-with-sourcetype
 function jsBrowserify() {
-    // set up the browserify instance on a task basis
-    const b = browserify({
-        entries: ROOT + SRC + "js/index.js",
-        debug: true
-    });
-
-    return b.bundle()
-        .pipe(source("scripts.min.js"))
-        .pipe(buffer())
-        .pipe(sourcemaps.init({ loadMaps: true }))
-        // Add transformation tasks to the pipeline here.
-        .pipe(uglify())
-        .on("error", console.error)
-        .pipe(sourcemaps.write("./"))
-        .pipe(gulp.dest(PATH.build.js));
+    return merge(JS_FILES.map(file => {
+        return browserify({
+            entries: [PATH.src.js + file + ".js"],
+            debug: true
+        }).bundle()
+            .pipe(source(file + ".min.js"))
+            .pipe(buffer())
+            .pipe(sourcemaps.init({ loadMaps: true }))
+            // Add transformation tasks to the pipeline here.
+            .pipe(uglify())
+            .on("error", console.error)
+            .pipe(sourcemaps.write("./"))
+            .pipe(gulp.dest(PATH.build.js));
+    }));
 }

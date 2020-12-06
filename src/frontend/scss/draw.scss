@@ -1,0 +1,51 @@
+@import "vars";
+
+.draw {
+    display: flex;
+    justify-content: space-between;
+}
+
+.draw-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 500px;
+}
+
+.draw-block--center {
+    align-items: center;
+}
+
+.draw-command {
+    color: $color-red;
+}
+
+.draw-icon {
+    width: 32px;
+}
+
+.draw-font {
+    font-weight: bold;
+    font-size: 1.8em;
+}
+
+.winner-text {
+    color: $color-red;
+}
+
+.winner-name {
+    text-transform: uppercase;
+}
+
+.anim-opacity {
+    transition: opacity 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.opacity-none {
+    opacity: 0 !important;
+}
+
+// Added to UNCSS_IGNORE array (gulp.js)
+.hidden {
+    display: none !important;
+}

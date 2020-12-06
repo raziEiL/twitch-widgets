@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -25,30 +6,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const twitch_auth_1 = require("twitch-auth");
 const twitch_chat_client_1 = require("twitch-chat-client");
-const Vote = __importStar(require("./src/vote-command"));
+const ts_raz_util_1 = require("ts-raz-util");
+const vote_command_1 = __importDefault(require("./src/vote-command"));
+const draw_command_1 = __importDefault(require("./src/draw-command"));
+const helpers_1 = require("./src/helpers");
+const config_json_1 = __importDefault(require("./config.json"));
 if (!process.env.CLIENT_ID || !process.env.ACCESS_TOKEN || !process.env.CHANNEL_NAME)
     throw new Error("Failed to get variables from .env file!");
 const app = express_1.default();
-const HTML_PATH = __dirname.replace("backend", "frontend") + "/index.html";
-let voting;
+const PATH = __dirname.replace("backend", "frontend");
+let vote;
 let voteList;
+let draw;
 app.use(express_1.default.static("dist/frontend"));
-app.get("/", (req, res) => {
-    res.sendFile(HTML_PATH);
+app.get("/vote", (req, res) => {
+    res.sendFile(PATH + "/vote.html");
 });
-app.get("/api/voting", (req, res) => {
-    if (voting)
-        res.json(voting.getVoteData());
-    else
-        res.status(503).send("The voting is not started yet!");
-});
-app.get("/votelist", (req, res) => {
-    if (voting)
-        res.send(voting.getHtmlVotelistPage());
+app.get("/vote/list", (req, res) => {
+    if (vote)
+        res.send(vote.getHtmlVotelistPage());
     else if (voteList)
         res.send(voteList);
     else
         res.status(503).send("The voting is not started yet!");
+});
+app.get("/draw", (req, res) => {
+    res.sendFile(PATH + "/draw.html");
+});
+app.get("/api/vote", (req, res) => {
+    if (vote)
+        res.json(vote.getData());
+    else
+        res.status(503).send("The voting is not started yet!");
+});
+app.get("/api/draw", (req, res) => {
+    if (draw)
+        res.json(draw.getData());
+    else
+        res.status(503).send("The prize drawing is not started yet!");
+});
+app.get("/api/draw/winner", (req, res) => {
+    if (draw)
+        res.send(draw.getRandomWinner());
+    else
+        res.status(503).send("The prize drawing is not started yet!");
 });
 app.listen(process.env.PORT, () => {
     console.log(`express listening at port ${process.env.PORT}`);
@@ -63,39 +64,78 @@ chatClient.connect()
     .catch(() => {
     console.error("Failed to connect");
 });
+const MESSAGE_MAX_CHARS = 96;
 function onMessage(channel, user, message) {
-    if (!message.startsWith("!"))
+    if (!message.startsWith(config_json_1.default.prefix) || message.length > MESSAGE_MAX_CHARS)
         return;
-    const args = message.trim().split(" ");
+    let args = helpers_1.removePrefix(message.trim()).match(ts_raz_util_1.REGEX_COMMAND_LINE);
+    if (!args)
+        return;
+    args = args.map(s => s.replace(ts_raz_util_1.REGEX_QUOTES, ""));
     const command = args.shift();
+    if (!command)
+        return;
+    console.log(`user: ${user}, command: ${command}, args:`, args);
     switch (command) {
-        case Vote.VOTE_COMMAND: {
-            if (voting) {
+        case config_json_1.default.commands.vote.name: {
+            if (vote) {
                 console.log("The vote has ended");
-                chatClient.say(channel, "/me " + voting.getWinnerMessage());
-                voteList = voting.getHtmlVotelistPage();
-                voting = undefined;
+                chatClient.say(channel, "/me " + vote.getWinnerMessage());
+                voteList = vote.getHtmlVotelistPage();
+                vote = undefined;
                 return;
             }
-            const errorMessage = Vote.VotingPoll.isInvalidCondidates(args);
+            const errorMessage = vote_command_1.default.isInvalidParams(args);
             if (errorMessage)
                 chatClient.say(channel, `@${user} ` + errorMessage);
             else {
-                voting = new Vote.VotingPoll(args);
-                chatClient.say(channel, `@${user} ` + voting.getVoteStartMessage());
-                console.log(`Voting progress bar is available at: http://localhost:${process.env.PORT}`);
+                vote = new vote_command_1.default(args);
+                chatClient.say(channel, `@${user} ` + vote.getStartMessage());
+                console.log(`Voting progress bar is available at: http://localhost:${process.env.PORT}/vote`);
+            }
+            break;
+        }
+        case config_json_1.default.commands.draw.name: {
+            if (draw) {
+                draw.add(user);
+                return;
+            }
+            const errorMessage = draw_command_1.default.isInvalidParams(args);
+            if (errorMessage)
+                chatClient.say(channel, `@${user} ` + errorMessage);
+            else {
+                draw = new draw_command_1.default(args);
+                chatClient.say(channel, `@${user} ` + draw.getStartMessage());
+                console.log(`Prize drawing status is available at: http://localhost:${process.env.PORT}/draw`);
+            }
+            break;
+        }
+        case config_json_1.default.commands.drawstart.name: {
+            if (draw) {
+                console.log("The draw has started!");
+                draw.start();
+                chatClient.say(channel, "/me " + draw.getStartedMessage());
+                return;
+            }
+            break;
+        }
+        case config_json_1.default.commands.drawstop.name: {
+            if (draw) {
+                console.log("The draw has stopped!");
+                draw = undefined;
+                return;
             }
             break;
         }
         default: {
-            if (voting) {
+            if (vote) {
                 switch (command) {
-                    case voting.command.condidateA: {
-                        voting.vote(user, voting.command.condidateA);
+                    case vote.command.condidateA: {
+                        vote.vote(user, vote.command.condidateA);
                         break;
                     }
-                    case voting.command.condidateB: {
-                        voting.vote(user, voting.command.condidateB);
+                    case vote.command.condidateB: {
+                        vote.vote(user, vote.command.condidateB);
                         break;
                     }
                     default: {

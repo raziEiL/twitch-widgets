@@ -1,20 +1,4 @@
-body {
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-}
-
-main {
-    margin: 0 auto;
-    padding: 12px;
-    width: 760px;
-}
-
-p {
-    font-weight: 500;
-    font-size: 1.25em;
-    display: block;
-    margin: 0;
-}
+@import "vars";
 
 .information {
     display: flex;
@@ -36,12 +20,12 @@ p {
 }
 
 .bar-user-a {
-    background-color: #4DE94C;
+    background-color: $color-green;
     width: 50%;
 }
 
 .bar-user-b {
-    background-color: #F60000;
+    background-color: $color-red;
     width: 50%;
 }
 

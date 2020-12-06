@@ -1,44 +1,19 @@
-setInterval(makeRequest, 3000);
+const request = require("./request");
 
-function makeRequest() {
-    let httpRequest;
+setInterval(() => {
+    request("http://localhost/api/vote", voteCallback);
+}, 3000);
 
-    if (window.XMLHttpRequest) { // Mozilla, Safari, ...
-        httpRequest = new XMLHttpRequest();
-        if (httpRequest.overrideMimeType) {
-            httpRequest.overrideMimeType("application/json");
-        }
-    }
-    else if (window.ActiveXObject) { // IE
-        try {
-            httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch {
-            try {
-                httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch { }
-        }
-    }
-
-    if (!httpRequest) {
-        console.log("Не вышло :( Невозможно создать экземпляр класса XMLHTTP ");
-        return;
-    }
-
-    httpRequest.onreadystatechange = () => updateVoices(httpRequest);
-    httpRequest.open("GET", "http://localhost:80/api/voting", true);
-    httpRequest.send(null);
-}
-
-function updateVoices(httpRequest) {
+function voteCallback(httpRequest) {
     if (httpRequest.readyState == 4) {
         if (httpRequest.status == 200) {
-            const voteData = JSON.parse(httpRequest.responseText);
-            console.log(voteData);
+            const data = JSON.parse(httpRequest.responseText);
+            console.log(data);
 
-            if (!voteData)
+            if (!data)
                 return;
 
-            const { condidateA, condidateB } = voteData;
+            const { condidateA, condidateB } = data;
             const total = condidateA.votes + condidateB.votes;
 
             const calcPercent = (voices) => total <= 0 ? 0 : Math.round(voices / total * 100);

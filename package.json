@@ -7,11 +7,12 @@
         "start": "node --unhandled-rejections=strict -r dotenv/config dist/backend/index.js",
         "build": "gulp build && tsc",
         "build-dev": "gulp build-dev && tsc --sourceMap true -p tsconfig.dev.json",
-        "watch": "gulp watch",
-        "watch-dev": "gulp watch-dev",
+        "build-front": "gulp build",
+        "build-end": "tsc",
+        "watch-front": "gulp watch",
+        "watch-end": "nodemon",
         "test": "jest --detectOpenHandles",
-        "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern src/**/*.spec.ts",
-        "nodemon": "nodemon"
+        "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern src/**/*.spec.ts"
     },
     "repository": {
         "type": "git",
@@ -74,6 +75,7 @@
         "gulp-uglify-es": "^2.0.0",
         "gulp-uncss": "^1.0.6",
         "jest": "^26.6.3",
+        "merge-stream": "^2.0.0",
         "node-sass": "^4.14.1",
         "postcss-calc": "^7.0.1",
         "postcss-css-variables": "^0.17.0",
@@ -86,6 +88,7 @@
     "dependencies": {
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
+        "ts-raz-util": "^1.0.3",
         "twitch": "^4.3.2",
         "twitch-auth": "^4.3.2",
         "twitch-chat-client": "^4.3.2"
