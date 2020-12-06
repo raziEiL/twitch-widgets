@@ -1,0 +1,47 @@
+@import "vars";
+
+html {
+    background: linear-gradient(to right, white, #f1faee);
+}
+
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    color: $color-text;
+}
+
+main {
+    margin: 0 auto;
+    padding: 12px;
+    width: 760px;
+}
+
+p {
+    font-weight: 500;
+    font-size: 1.3em;
+    display: block;
+    margin: 0;
+    line-height: 1.3;
+}
+
+a {
+    color: $color-a;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:visited {
+        color: $color-a;
+    }
+}
+
+.text-center {
+    text-align: center;
+}
+
+// Added to UNCSS_IGNORE array (gulp.js)
+.hidden {
+    display: none !important;
+}

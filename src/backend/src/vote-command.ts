@@ -1,6 +1,6 @@
 
 import { VoteCandidates, VoteCount, VoteCandidatesData } from "./types";
-import { removePrefix, addPrefix } from "./helpers";
+import { addPrefix } from "./helpers";
 import config from "../config.json";
 
 const COMMAND = config.prefix + config.commands.vote.name;
@@ -8,7 +8,7 @@ const MESSAGE_START = `Голосование началось! Для заве�
 const CANDIDATE_REGEX = /\w+/;
 
 export default class VotePoll {
-    command: VoteCandidates;
+    name: VoteCandidates;
     votes: Map<string, string>;
 
     static isInvalidParams(args: string[]) {
@@ -26,20 +26,19 @@ export default class VotePoll {
         }
     }
     constructor(args: string[]) {
-        this.command = {
-            condidateA: addPrefix(args[0]),
-            condidateB: addPrefix(args[1])
+        this.name = {
+            condidateA: args[0],
+            condidateB: args[1]
         };
         this.votes = new Map<string, string>();
     }
     vote(user: string, candidate: string) {
-        if (candidate !== this.command.condidateA && candidate !== this.command.condidateB) {
+        if (candidate !== this.name.condidateA && candidate !== this.name.condidateB) {
             console.log(`${user} not allowed to vote for unknown candidate ${candidate}`);
             return;
         }
         else if (this.votes.has(user)) {
             console.log(`${user} has already voted!`);
-            //  this.chatClient.say(this.channel, `@${user} вы уже проголосовали!`);
             return;
         }
         this.votes.set(process.env.DEV ? Date.now().toString() : user, candidate);
@@ -50,7 +49,7 @@ export default class VotePoll {
         let voteCountA = 0, voteCountB = 0;
 
         for (const [, condidate] of this.votes) {
-            if (this.command.condidateA === condidate)
+            if (this.name.condidateA === condidate)
                 voteCountA++;
             else
                 voteCountB++;
@@ -61,13 +60,11 @@ export default class VotePoll {
         const votes = this.getVoteCount();
         return {
             condidateA: {
-                name: removePrefix(this.command.condidateA),
-                command: this.command.condidateA,
+                command: addPrefix(this.name.condidateA),
                 votes: votes.voteCountA
             },
             condidateB: {
-                name: removePrefix(this.command.condidateB),
-                command: this.command.condidateB,
+                command: addPrefix(this.name.condidateB),
                 votes: votes.voteCountB
             }
         };
@@ -77,16 +74,16 @@ export default class VotePoll {
         if (votes.voteCountA === votes.voteCountB)
             return "Итоги голосования: ничья!";
         else if (votes.voteCountA > votes.voteCountB)
-            return "Итоги голосования: победил " + removePrefix(this.command.condidateA);
-        return "Итоги голосования: победил " + removePrefix(this.command.condidateB);
+            return "Итоги голосования: победил " + this.name.condidateA;
+        return "Итоги голосования: победил " + this.name.condidateB;
     }
     getStartMessage() {
         return MESSAGE_START;
     }
     getHtmlVotelistPage() {
         let body = "";
-        for (const [user, command] of this.votes) {
-            body += `<tr><td class="tg-0lax">${user}</td><td class="tg-0lax">${removePrefix(command)}</td></tr>`;
+        for (const [user, condidate] of this.votes) {
+            body += `<tr><td class="tg-0lax">${user}</td><td class="tg-0lax">${condidate}</td></tr>`;
         }
         return `<style type="text/css">.tg{border-collapse:collapse;border-spacing:0;margin:0px auto}.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial,sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal}.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial,sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal}.tg .tg-0lax{text-align:left;vertical-align:top}</style><table class="tg"><thead><tr><th class="tg-0lax">User</th><th class="tg-0lax">Candidate</th></tr></thead><tbody>${body}</tbody></table>`;
     }

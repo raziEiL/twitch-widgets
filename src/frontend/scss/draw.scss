@@ -16,8 +16,12 @@
     align-items: center;
 }
 
+.draw-text {
+    text-transform: uppercase;
+}
+
 .draw-command {
-    color: $color-red;
+    color: $color-a;
 }
 
 .draw-icon {
@@ -30,7 +34,7 @@
 }
 
 .winner-text {
-    color: $color-red;
+    color: $color-a;
 }
 
 .winner-name {
@@ -43,9 +47,4 @@
 
 .opacity-none {
     opacity: 0 !important;
-}
-
-// Added to UNCSS_IGNORE array (gulp.js)
-.hidden {
-    display: none !important;
 }

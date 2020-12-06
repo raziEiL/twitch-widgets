@@ -2,7 +2,7 @@ const request = require("./request");
 
 setInterval(() => {
     request("http://localhost/api/vote", voteCallback);
-}, 3000);
+}, 1000);
 
 function voteCallback(httpRequest) {
     if (httpRequest.readyState == 4) {

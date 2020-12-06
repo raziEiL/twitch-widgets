@@ -130,12 +130,12 @@ function onMessage(channel, user, message) {
         default: {
             if (vote) {
                 switch (command) {
-                    case vote.command.condidateA: {
-                        vote.vote(user, vote.command.condidateA);
+                    case vote.name.condidateA: {
+                        vote.vote(user, vote.name.condidateA);
                         break;
                     }
-                    case vote.command.condidateB: {
-                        vote.vote(user, vote.command.condidateB);
+                    case vote.name.condidateB: {
+                        vote.vote(user, vote.name.condidateB);
                         break;
                     }
                     default: {

@@ -14,7 +14,6 @@ export interface VoteCandidatesData {
 }
 
 export interface VoteData {
-    name: string;
     command: string;
     votes: number;
 }

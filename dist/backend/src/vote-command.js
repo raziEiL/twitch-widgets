@@ -10,9 +10,9 @@ const MESSAGE_START = `Голосование началось! Для заве�
 const CANDIDATE_REGEX = /\w+/;
 class VotePoll {
     constructor(args) {
-        this.command = {
-            condidateA: helpers_1.addPrefix(args[0]),
-            condidateB: helpers_1.addPrefix(args[1])
+        this.name = {
+            condidateA: args[0],
+            condidateB: args[1]
         };
         this.votes = new Map();
     }
@@ -31,7 +31,7 @@ class VotePoll {
         }
     }
     vote(user, candidate) {
-        if (candidate !== this.command.condidateA && candidate !== this.command.condidateB) {
+        if (candidate !== this.name.condidateA && candidate !== this.name.condidateB) {
             console.log(`${user} not allowed to vote for unknown candidate ${candidate}`);
             return;
         }
@@ -46,7 +46,7 @@ class VotePoll {
     getVoteCount() {
         let voteCountA = 0, voteCountB = 0;
         for (const [, condidate] of this.votes) {
-            if (this.command.condidateA === condidate)
+            if (this.name.condidateA === condidate)
                 voteCountA++;
             else
                 voteCountB++;
@@ -57,13 +57,11 @@ class VotePoll {
         const votes = this.getVoteCount();
         return {
             condidateA: {
-                name: helpers_1.removePrefix(this.command.condidateA),
-                command: this.command.condidateA,
+                command: helpers_1.addPrefix(this.name.condidateA),
                 votes: votes.voteCountA
             },
             condidateB: {
-                name: helpers_1.removePrefix(this.command.condidateB),
-                command: this.command.condidateB,
+                command: helpers_1.addPrefix(this.name.condidateB),
                 votes: votes.voteCountB
             }
         };
@@ -73,16 +71,16 @@ class VotePoll {
         if (votes.voteCountA === votes.voteCountB)
             return "Итоги голосования: ничья!";
         else if (votes.voteCountA > votes.voteCountB)
-            return "Итоги голосования: победил " + helpers_1.removePrefix(this.command.condidateA);
-        return "Итоги голосования: победил " + helpers_1.removePrefix(this.command.condidateB);
+            return "Итоги голосования: победил " + this.name.condidateA;
+        return "Итоги голосования: победил " + this.name.condidateB;
     }
     getStartMessage() {
         return MESSAGE_START;
     }
     getHtmlVotelistPage() {
         let body = "";
-        for (const [user, command] of this.votes) {
-            body += `<tr><td class="tg-0lax">${user}</td><td class="tg-0lax">${helpers_1.removePrefix(command)}</td></tr>`;
+        for (const [user, condidate] of this.votes) {
+            body += `<tr><td class="tg-0lax">${user}</td><td class="tg-0lax">${condidate}</td></tr>`;
         }
         return `<style type="text/css">.tg{border-collapse:collapse;border-spacing:0;margin:0px auto}.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial,sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal}.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial,sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal}.tg .tg-0lax{text-align:left;vertical-align:top}</style><table class="tg"><thead><tr><th class="tg-0lax">User</th><th class="tg-0lax">Candidate</th></tr></thead><tbody>${body}</tbody></table>`;
     }

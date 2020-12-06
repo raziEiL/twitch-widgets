@@ -17,30 +17,20 @@
 .progressBar {
     display: flex;
     height: 36px;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .bar-user-a {
-    background-color: $color-green;
+    background-color: $color-a;
     width: 50%;
 }
 
 .bar-user-b {
-    background-color: $color-red;
+    background-color: $color-b;
     width: 50%;
 }
 
-$border-radius: 6px;
-
-.border-left {
-    border-top-left-radius: $border-radius;
-    border-bottom-left-radius: $border-radius;
-}
-
-.border-right {
-    border-top-right-radius: $border-radius;
-    border-bottom-right-radius: $border-radius;
-}
-
-.animation {
-    transition: width 2s;
+.anim-width {
+    transition: width 1.5s cubic-bezier(0.33, 1, 0.68, 1);
 }
