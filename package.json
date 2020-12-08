@@ -5,14 +5,15 @@
     "main": "dist/backend/index.js",
     "scripts": {
         "start": "node --unhandled-rejections=strict dist/backend/index.js",
-        "build": "npm run build-front && npm run build-end",
+        "start-pkg": "cmd /k pkg-release/twitch-events",
+        "build": "npm run build-full && npm run build-pkg",
+        "build-full": "npm run build-front && npm run build-end",
         "build-dev": "gulp build-dev && rm -rf dist/backend && tsc --sourceMap true -p tsconfig.dev.json",
         "build-front": "gulp build",
         "build-end": "rm -rf dist/backend && tsc",
+        "build-pkg": "rm -rf pkg-release && pkg package.json --out-path pkg-release && copy /y config.json pkg-release",
         "watch-front": "gulp watch",
         "watch-end": "nodemon",
-        "build-pkg": "rm -rf pkg-release && pkg package.json --out-path pkg-release && copy /y config.json pkg-release",
-        "start-pkg": "cmd /k pkg-release/twitch-events",
         "test": "jest --detectOpenHandles",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern src/**/*.spec.ts"
     },
