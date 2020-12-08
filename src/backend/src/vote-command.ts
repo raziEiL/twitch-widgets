@@ -41,7 +41,7 @@ export default class VotePoll {
             console.log(`${user} has already voted!`);
             return;
         }
-        this.votes.set(process.env.DEV ? Date.now().toString() : user, candidate);
+        this.votes.set(config.debug.fakeUsers ? Date.now().toString() : user, candidate);
         console.log(`${user} voted for ${candidate}!`);
         return this;
     }

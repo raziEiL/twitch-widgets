@@ -1,3 +1,5 @@
+// TODO: README
+// TODO: обновить ts-raz-util
 // crash log for debugging pkg app
 process.on("uncaughtException", (err) => {
     fs.writeFileSync("crash.log", err.message);
@@ -23,7 +25,6 @@ let draw: Draw | undefined;
 */
 const app = express();
 const PATH = path.join(__dirname, "..", "frontend");
-console.log("frontend path: " + PATH);
 
 app.use(express.static(PATH));
 
@@ -86,7 +87,7 @@ for (const key in config.commands) {
 }
 
 const client = tmi.Client({
-    options: { debug: true },
+    options: { debug: config.debug.twitch },
     connection: {
         reconnect: true,
         secure: true,
@@ -116,7 +117,6 @@ client.on("message", (channel, userState, message, self) => {
     if (!message.startsWith(config.commands.prefix) || message.length > MESSAGE_MAX_CHARS)
         return;
 
-    // TODO: проверить админ права пользователя
     let args = removeCommandPrefix(message.trim()).match(REGEX_COMMAND_LINE);
     if (!args)
         return;
@@ -127,7 +127,9 @@ client.on("message", (channel, userState, message, self) => {
     if (!command)
         return;
 
-    if (userState["user-type"] !== "admin" && !adminCommands.includes(command)) {
+    const isAdmin = username === config.twitch.login;
+
+    if (!isAdmin && adminCommands.includes(command)) {
         console.log(`user: ${username} has no access to the ${command} command`);
         return;
     }
@@ -159,6 +161,9 @@ client.on("message", (channel, userState, message, self) => {
                 draw.add(username);
                 return;
             }
+            if (!isAdmin)
+                return;
+
             const errorMessage = Draw.isInvalidParams(args);
 
             if (errorMessage)

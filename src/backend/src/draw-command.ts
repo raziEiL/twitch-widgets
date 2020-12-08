@@ -38,7 +38,10 @@ export default class Draw {
             console.log(`${user} cannot vote now!`);
             return;
         }
-        this.users.add(user);
+        if (config.debug.fakeUsers)
+            this.users.add(user + Date.now().toString());
+        else
+            this.users.add(user);
         return this;
     }
     start() {

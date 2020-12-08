@@ -1,8 +1,9 @@
+.vscode
+**/*.exe
+**/*.log
+**/*.spec.js
+**/*.test.js
+dist
 node_modules
 package-lock.json
-**/*.test.js
-**/*.spec.js
-**/*.log
-**/*.exe
-dist
 pkg-release

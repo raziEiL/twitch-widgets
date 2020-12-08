@@ -29,8 +29,14 @@ export interface DrawData {
 
 // Config
 export interface Config {
+    debug: Debug;
     twitch: Twitch;
     commands: Commands;
+}
+
+export interface Debug {
+    twitch: boolean;
+    fakeUsers: boolean;
 }
 
 export interface Commands {

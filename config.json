@@ -5,6 +5,10 @@
         "httpPort": 80,
         "ircPort": 433
     },
+    "debug": {
+        "twitch": true,
+        "fakeUsers": true
+    },
     "commands": {
         "prefix": "!",
         "vote": {
