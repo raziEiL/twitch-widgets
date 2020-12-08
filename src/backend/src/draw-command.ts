@@ -1,11 +1,11 @@
 import { timestamp } from "ts-raz-util";
 import { getRandomInt } from "./helpers";
 import { DrawData } from "./types";
-import config from "../config.json";
+import { config } from "./pkg-config";
 
-const COMMAND_DRAW = config.prefix + config.commands.draw.name;
-const COMMAND_START = config.prefix + config.commands.drawstart.name;
-const COMMAND_STOP = config.prefix + config.commands.drawstop.name;
+const COMMAND_DRAW = config.commands.prefix + config.commands.draw.name;
+const COMMAND_START = config.commands.prefix + config.commands.drawstart.name;
+const COMMAND_STOP = config.commands.prefix + config.commands.drawstop.name;
 const MESSAGE_DRAW = `Для настройки розыгрыша напишите ${COMMAND_DRAW} {ВРЕМЯ_В_МИНУТАХ} {ТЕКСТ}. Например: ${COMMAND_DRAW} 5 "УЧАСТВУЙТЕ В РОЗЫГРЫШЕ КРЕДИТОВ!"`;
 const MESSAGE_STARTED = `Розыгрыш начался! Принимайте участие с помощью команды ${COMMAND_DRAW} в чат`;
 const MESSAGE_START = `Для запуска розыгрыша напишите ${COMMAND_START}, а для отмены ${COMMAND_STOP}`;

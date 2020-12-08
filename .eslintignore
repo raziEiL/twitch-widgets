@@ -3,5 +3,4 @@ node_modules
 **/*.test.js
 **/*.spec.js
 **/test.js
-
 **/.test.js

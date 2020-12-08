@@ -26,3 +26,29 @@ export interface DrawData {
     endTimestamp: number;
     lastWinner: string;
 }
+
+// Config
+export interface Config {
+    twitch: Twitch;
+    commands: Commands;
+}
+
+export interface Commands {
+    prefix: string;
+    vote: Command;
+    draw: Command;
+    drawstop: Command;
+    drawstart: Command;
+}
+
+export interface Command {
+    name: string;
+    admin: boolean;
+}
+
+export interface Twitch {
+    password: string;
+    login: string;
+    httpPort: number;
+    ircPort: number;
+}

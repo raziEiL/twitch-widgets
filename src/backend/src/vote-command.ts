@@ -1,10 +1,10 @@
 
 import { VoteCandidates, VoteCount, VoteCandidatesData } from "./types";
-import { addPrefix } from "./helpers";
-import config from "../config.json";
+import { addCommandPrefix } from "./helpers";
+import { config } from "./pkg-config";
 
-const COMMAND = config.prefix + config.commands.vote.name;
-const MESSAGE_START = `Голосование началось! Для завершения напишите ${COMMAND}`;
+const COMMAND_VOTE = config.commands.prefix + config.commands.vote.name;
+const MESSAGE_START = `Голосование началось! Для завершения напишите ${COMMAND_VOTE}`;
 const CANDIDATE_REGEX = /\w+/;
 
 export default class VotePoll {
@@ -13,7 +13,7 @@ export default class VotePoll {
 
     static isInvalidParams(args: string[]) {
         if (!args.length || args.length !== 2)
-            return `для начала голосования напишите ${COMMAND} {УЧАСТНИК#1} {УЧАСТНИК#2}. Например: ${COMMAND} Fnatic NaVi`;
+            return `для начала голосования напишите ${COMMAND_VOTE} {УЧАСТНИК#1} {УЧАСТНИК#2}. Например: ${COMMAND_VOTE} Fnatic NaVi`;
         else {
             const unqie = new Set<string>();
             for (const arg of args) {
@@ -60,11 +60,11 @@ export default class VotePoll {
         const votes = this.getVoteCount();
         return {
             condidateA: {
-                command: addPrefix(this.name.condidateA),
+                command: addCommandPrefix(this.name.condidateA),
                 votes: votes.voteCountA
             },
             condidateB: {
-                command: addPrefix(this.name.condidateB),
+                command: addCommandPrefix(this.name.condidateB),
                 votes: votes.voteCountB
             }
         };

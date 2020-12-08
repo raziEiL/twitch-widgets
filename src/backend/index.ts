@@ -1,20 +1,28 @@
+// crash log for debugging pkg app
+process.on("uncaughtException", (err) => {
+    fs.writeFileSync("crash.log", err.message);
+});
+
 import express from "express";
-import { StaticAuthProvider } from "twitch-auth";
-import { ChatClient } from "twitch-chat-client";
+import fs from "fs";
+import tmi from "tmi.js";
 import { REGEX_COMMAND_LINE, REGEX_QUOTES } from "ts-raz-util";
 import VotePoll from "./src/vote-command";
 import Draw from "./src/draw-command";
-import { removePrefix } from "./src/helpers";
-import config from "./config.json";
+import { removeCommandPrefix } from "./src/helpers";
+import { config } from "./src/pkg-config";
 
-if (!process.env.CLIENT_ID || !process.env.ACCESS_TOKEN || !process.env.CHANNEL_NAME)
-    throw new Error("Failed to get variables from .env file!");
-
-const app = express();
-const PATH = __dirname.replace("backend", "frontend");
 let vote: VotePoll | undefined;
 let voteList: string | undefined;
 let draw: Draw | undefined;
+/*
+|==========================================================================
+| HTTP SERVER
+|==========================================================================
+*/
+const app = express();
+const PATH = __dirname.replace("backend", "frontend");
+console.log("frontend path: " + PATH);
 
 app.use(express.static("dist/frontend"));
 
@@ -56,33 +64,59 @@ app.get("/api/draw/winner", (req, res) => {
         res.status(503).send("The prize drawing is not started yet!");
 });
 
-app.listen(process.env.PORT, () => {
-    console.log(`express listening at port ${process.env.PORT}`);
+app.listen(config.twitch.httpPort, () => {
+    console.log(`Http server listening at http://localhost:${config.twitch.httpPort}`);
+});
+/*
+|==========================================================================
+| TWITCH BOT
+|==========================================================================
+*/
+const MESSAGE_MAX_CHARS = 96;
+const adminCommands: string[] = [];
+
+for (const key in config.commands) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // @ts-ignore
+    if (config.commands[key].admin)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // @ts-ignore
+        adminCommands.push(config.commands[key].name);
+}
+
+const client = tmi.Client({
+    options: { debug: true },
+    connection: {
+        reconnect: true,
+        secure: true,
+        port: config.twitch.ircPort
+    },
+    identity: {
+        username: config.twitch.login,
+        password: config.twitch.password
+    },
+    channels: [config.twitch.login]
 });
 
-const authProvider = new StaticAuthProvider(process.env.CLIENT_ID, process.env.ACCESS_TOKEN);
-const chatClient = new ChatClient(authProvider, { channels: [process.env.CHANNEL_NAME], logger: { name: "ChatClient > ", minLevel: 2 } });
-
-chatClient.connect()
+client.connect()
     .then(() => {
-        console.log("Connected OK");
-        /* chatCl.onWhisper((user, message, msg) => {
-            onTwitchMessage(msg.target.value, user, message.trim());
-        }); */
-        chatClient.onMessage(onMessage);
+        console.log(`Connected to ${config.twitch.login} Twitch channel`);
     })
-    .catch(() => {
-        console.error("Failed to connect");
+    .catch(e => {
+        console.error(`Failed to connect to ${config.twitch.login} Twitch channel. Reason:`, e);
     });
 
-const MESSAGE_MAX_CHARS = 96;
+client.on("message", (channel, userState, message, self) => {
+    const { username } = userState;
 
-function onMessage(channel: string, user: string, message: string) {
-    if (!message.startsWith(config.prefix) || message.length > MESSAGE_MAX_CHARS)
+    if (self || !username)
+        return;
+
+    if (!message.startsWith(config.commands.prefix) || message.length > MESSAGE_MAX_CHARS)
         return;
 
     // TODO: проверить админ права пользователя
-    let args = removePrefix(message.trim()).match(REGEX_COMMAND_LINE);
+    let args = removeCommandPrefix(message.trim()).match(REGEX_COMMAND_LINE);
     if (!args)
         return;
 
@@ -92,13 +126,18 @@ function onMessage(channel: string, user: string, message: string) {
     if (!command)
         return;
 
-    console.log(`user: ${user}, command: ${command}, args:`, args);
+    if (userState["user-type"] !== "admin" && !adminCommands.includes(command)) {
+        console.log(`user: ${username} has no access to the ${command} command`);
+        return;
+    }
+
+    console.log(`user: ${username}, command: ${command}, args:`, args);
 
     switch (command) {
         case config.commands.vote.name: {
             if (vote) {
                 console.log("The vote has ended");
-                chatClient.say(channel, "/me " + vote.getWinnerMessage());
+                say(channel, "/me " + vote.getWinnerMessage());
                 voteList = vote.getHtmlVotelistPage();
                 vote = undefined;
                 return;
@@ -106,27 +145,27 @@ function onMessage(channel: string, user: string, message: string) {
             const errorMessage = VotePoll.isInvalidParams(args);
 
             if (errorMessage)
-                chatClient.say(channel, `@${user} ` + errorMessage);
+                say(channel, `@${username} ` + errorMessage);
             else {
                 vote = new VotePoll(args);
-                chatClient.say(channel, `@${user} ` + vote.getStartMessage());
-                console.log(`Voting progress bar is available at: http://localhost:${process.env.PORT}/vote`);
+                say(channel, `@${username} ` + vote.getStartMessage());
+                console.log(`Voting progress bar is available at: http://localhost:${config.twitch.httpPort}/vote`);
             }
             break;
         }
         case config.commands.draw.name: {
             if (draw) {
-                draw.add(user);
+                draw.add(username);
                 return;
             }
             const errorMessage = Draw.isInvalidParams(args);
 
             if (errorMessage)
-                chatClient.say(channel, `@${user} ` + errorMessage);
+                say(channel, `@${username} ` + errorMessage);
             else {
                 draw = new Draw(args);
-                chatClient.say(channel, `@${user} ` + draw.getStartMessage());
-                console.log(`Prize drawing status is available at: http://localhost:${process.env.PORT}/draw`);
+                say(channel, `@${username} ` + draw.getStartMessage());
+                console.log(`Prize drawing status is available at: http://localhost:${config.twitch.httpPort}/draw`);
             }
             break;
         }
@@ -134,7 +173,7 @@ function onMessage(channel: string, user: string, message: string) {
             if (draw) {
                 console.log("The draw has started!");
                 draw.start();
-                chatClient.say(channel, "/me " + draw.getStartedMessage());
+                say(channel, "/me " + draw.getStartedMessage());
                 return;
             }
             break;
@@ -151,11 +190,11 @@ function onMessage(channel: string, user: string, message: string) {
             if (vote) {
                 switch (command) {
                     case vote.name.condidateA: {
-                        vote.vote(user, vote.name.condidateA);
+                        vote.vote(username, vote.name.condidateA);
                         break;
                     }
                     case vote.name.condidateB: {
-                        vote.vote(user, vote.name.condidateB);
+                        vote.vote(username, vote.name.condidateB);
                         break;
                     }
                     default: {
@@ -167,4 +206,8 @@ function onMessage(channel: string, user: string, message: string) {
                 console.log(`Command ${command} not found`);
         }
     }
+});
+
+function say(channel: string, message: string) {
+    client.say(channel, message).catch(console.error);
 }

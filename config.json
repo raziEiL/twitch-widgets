@@ -1,6 +1,12 @@
 {
-    "prefix": "!",
+    "twitch": {
+        "password": "oauth:skxfneefds3t8dupbm67fhsxd9z1fn",
+        "login": "razie1l",
+        "httpPort": 80,
+        "ircPort": 433
+    },
     "commands": {
+        "prefix": "!",
         "vote": {
             "name": "vote",
             "admin": true

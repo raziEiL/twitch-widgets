@@ -1,22 +1,28 @@
 {
-    "name": "twitch-vote",
+    "name": "twitch-events",
     "version": "1.0.0",
-    "description": "Voting feature on Twitch chat",
+    "description": "Provides Twitch chat commands for broadcaster to create custom events",
     "main": "dist/backend/index.js",
     "scripts": {
-        "start": "node --unhandled-rejections=strict -r dotenv/config dist/backend/index.js",
-        "build": "gulp build && tsc",
-        "build-dev": "gulp build-dev && tsc --sourceMap true -p tsconfig.dev.json",
+        "start": "node --unhandled-rejections=strict dist/backend/index.js",
+        "build": "npm run build-front && npm run build-end",
+        "build-dev": "gulp build-dev && rm -rf dist/backend && tsc --sourceMap true -p tsconfig.dev.json",
         "build-front": "gulp build",
-        "build-end": "tsc",
+        "build-end": "rm -rf dist/backend && tsc",
         "watch-front": "gulp watch",
         "watch-end": "nodemon",
+        "build-pkg": "pkg -t win package.json",
+        "start-pkg": "cmd /k twitch-events",
         "test": "jest --detectOpenHandles",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern src/**/*.spec.ts"
     },
+    "bin": "dist/backend/index.js",
+    "pkg": {
+        "assets": "dist/frontend/**/*"
+    },
     "repository": {
         "type": "git",
-        "url": "https://github.com/raziEiL/text.parserex.io.git"
+        "url": "https://github.com/raziEiL/twitch-events.git"
     },
     "author": {
         "name": "Denis Medvedev (raziEiL)",
@@ -50,6 +56,7 @@
     "license": "GPL-3.0",
     "devDependencies": {
         "@types/express": "^4.17.9",
+        "@types/tmi.js": "^1.4.2",
         "@typescript-eslint/eslint-plugin": "^4.9.0",
         "@typescript-eslint/eslint-plugin-tslint": "^4.9.0",
         "@typescript-eslint/parser": "^4.9.0",
@@ -86,11 +93,8 @@
         "vinyl-source-stream": "^2.0.0"
     },
     "dependencies": {
-        "dotenv": "^8.2.0",
         "express": "^4.17.1",
-        "ts-raz-util": "^1.0.3",
-        "twitch": "^4.3.2",
-        "twitch-auth": "^4.3.2",
-        "twitch-chat-client": "^4.3.2"
+        "tmi.js": "^1.5.0",
+        "ts-raz-util": "^1.0.3"
     }
 }
