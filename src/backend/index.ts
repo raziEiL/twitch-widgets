@@ -5,6 +5,7 @@ process.on("uncaughtException", (err) => {
 
 import express from "express";
 import fs from "fs";
+import path from "path";
 import tmi from "tmi.js";
 import { REGEX_COMMAND_LINE, REGEX_QUOTES } from "ts-raz-util";
 import VotePoll from "./src/vote-command";
@@ -21,13 +22,13 @@ let draw: Draw | undefined;
 |==========================================================================
 */
 const app = express();
-const PATH = __dirname.replace("backend", "frontend");
+const PATH = path.join(__dirname, "..", "frontend");
 console.log("frontend path: " + PATH);
 
-app.use(express.static("dist/frontend"));
+app.use(express.static(PATH));
 
 app.get("/vote", (req, res) => {
-    res.sendFile(PATH + "/vote.html");
+    res.sendFile(path.join(PATH, "vote.html"));
 });
 
 app.get("/vote/list", (req, res) => {
@@ -40,7 +41,7 @@ app.get("/vote/list", (req, res) => {
 });
 
 app.get("/draw", (req, res) => {
-    res.sendFile(PATH + "/draw.html");
+    res.sendFile(path.join(PATH, "draw.html"));
 });
 
 app.get("/api/vote", (req, res) => {

@@ -11,8 +11,8 @@
         "build-end": "rm -rf dist/backend && tsc",
         "watch-front": "gulp watch",
         "watch-end": "nodemon",
-        "build-pkg": "pkg -t win package.json",
-        "start-pkg": "cmd /k twitch-events",
+        "build-pkg": "rm -rf pkg-release && pkg package.json --out-path pkg-release && copy /y config.json pkg-release",
+        "start-pkg": "cmd /k pkg-release/twitch-events",
         "test": "jest --detectOpenHandles",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern src/**/*.spec.ts"
     },
