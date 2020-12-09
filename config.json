@@ -1,7 +1,7 @@
 {
     "twitch": {
-        "password": "",
-        "login": "",
+        "password": "oauth:j8sw4m4ao19551vdpidp5e0c3zxguc",
+        "login": "razie1l",
         "httpPort": 80,
         "ircPort": 433
     },
