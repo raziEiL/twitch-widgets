@@ -1,6 +1,3 @@
-// TODO: README
-// TODO: обновить ts-raz-util
-// crash log for debugging pkg app
 process.on("uncaughtException", (err) => {
     fs.writeFileSync("crash.log", err.message);
 });
