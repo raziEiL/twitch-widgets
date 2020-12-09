@@ -7,7 +7,7 @@
     },
     "debug": {
         "twitch": false,
-        "fakeUsers": true
+        "fakeUsers": false
     },
     "commands": {
         "prefix": "!",
