@@ -91,10 +91,10 @@ body {
 Некоторые элементы используют класс `.color-bg-a` и `.color-bg-b` для применения цвета фона. Изменим цвет прогресса голосования на зеленый для первого участника и желтый для второго.
 ```css
 .color-bg-a {
-    background-color: green;
+    background: green;
 }
 .color-bg-b {
-    background-color: yellow;
+    background: yellow;
 }
 ```
 ![](https://github.com/raziEiL/twitch-events/blob/master/git-img/4.png)
