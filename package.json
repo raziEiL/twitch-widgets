@@ -5,7 +5,7 @@
     "main": "dist/backend/index.js",
     "scripts": {
         "start": "node --unhandled-rejections=strict dist/backend/index.js",
-        "start-pkg": "cmd /k pkg-release/twitch-events",
+        "start-pkg": "cd pkg-release && cmd /k twitch-events-win",
         "build": "npm run build-full && npm run build-pkg",
         "build-full": "npm run build-front && npm run build-end",
         "build-dev": "gulp build-dev && rm -rf dist/backend && tsc --sourceMap true -p tsconfig.dev.json",

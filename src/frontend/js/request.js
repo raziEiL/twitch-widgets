@@ -2,7 +2,7 @@ module.exports = (url, callback) => {
     let httpRequest;
 
     if (window.XMLHttpRequest) { // Mozilla, Safari, ...
-        httpRequest = new XMLHttpRequest().onreadystatechange;
+        httpRequest = new XMLHttpRequest();
         if (httpRequest.overrideMimeType) {
             httpRequest.overrideMimeType("application/json");
         }
@@ -22,7 +22,7 @@ module.exports = (url, callback) => {
         return;
     }
 
-    httpRequest.onreadystatechange = (req) => callback(req);
+    httpRequest.onreadystatechange = () => callback(httpRequest);
     httpRequest.open("GET", url, true);
     httpRequest.send();
 };

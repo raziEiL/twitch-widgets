@@ -1,5 +1,3 @@
-@import "vars";
-
 .draw {
     display: flex;
     justify-content: space-between;
@@ -20,10 +18,6 @@
     text-transform: uppercase;
 }
 
-.draw-command {
-    color: $color-a;
-}
-
 .draw-icon {
     width: 32px;
 }
@@ -31,10 +25,6 @@
 .draw-font {
     font-weight: bold;
     font-size: 1.8em;
-}
-
-.winner-text {
-    color: $color-a;
 }
 
 .winner-name {

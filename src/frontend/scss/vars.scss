@@ -1,3 +1,19 @@
 $color-a: #E94957;
 $color-b: #5590B4;
 $color-text:black;
+
+.color-a {
+    color: $color-a;
+}
+
+.color-b {
+    color: $color-b;
+}
+
+.color-bg-a {
+    background-color: $color-a;
+}
+
+.color-bg-b {
+    background-color: $color-b;
+}

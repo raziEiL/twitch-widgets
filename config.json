@@ -1,12 +1,12 @@
 {
     "twitch": {
-        "password": "oauth:skxfneefds3t8dupbm67fhsxd9z1fn",
-        "login": "razie1l",
+        "password": "",
+        "login": "",
         "httpPort": 80,
         "ircPort": 433
     },
     "debug": {
-        "twitch": true,
+        "twitch": false,
         "fakeUsers": true
     },
     "commands": {

@@ -1,13 +1,14 @@
 @import "vars";
 
-html {
+/* html {
     background: linear-gradient(to right, white, #f1faee);
 }
-
+ */
 body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
     color: $color-text;
+    background: linear-gradient(to right, white, #f1faee);
 }
 
 main {
