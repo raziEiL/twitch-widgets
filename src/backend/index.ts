@@ -105,7 +105,7 @@ client.connect()
         console.log(`Connected to ${config.twitch.login} Twitch channel`);
     })
     .catch(e => {
-        console.error(`Failed to connect to ${config.twitch.login} Twitch channel. Reason:`, e);
+        console.error("Failed to connect to Twitch channel. Reason:", e);
     });
 
 client.on("message", (channel, userState, message, self) => {
