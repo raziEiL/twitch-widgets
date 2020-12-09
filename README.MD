@@ -1,7 +1,7 @@
-![](https://github.com/raziEiL/twitch-events/blob/master/git-img/0.png "Voting widget demonstarion")
 # Руководство пользователя приложения Twitch-events 
 # Описание
 Twitch-events — это консольное приложение предоставляющее дополнительные чат команды и виджеты для стримеров платформы Twitch.
+![](https://github.com/raziEiL/twitch-events/blob/master/git-img/0.png "Voting widget demonstarion")
 # Особенности
 * Создание событий голосования и розыгрыша с помощью чат команд
 * Виджеты для просмотра прогресса событий и интеграции с OBS
