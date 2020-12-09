@@ -118,7 +118,7 @@ body {
 
 # Контакты
 По вопросам сотрудничества свяжитесь со мной через:  
-Почта: mr.raz4291@gmail.com  
+mr.raz4291@gmail.com  
 [Steam](http://steamcommunity.com/id/raziEiL)  
 [Discord сервер Alliance](https://discord.gg/pQPzazkpBq)
 
