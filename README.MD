@@ -28,6 +28,12 @@ Twitch-events — это консольное приложение предос�
         },
 }
 ```
+    <summary>Cобщение в консоли при успешном запуске</summary>
+    
+```
+Http server listening at http://localhost:80
+Connected to razie1l Twitch channel
+```
 
 </details>
 
