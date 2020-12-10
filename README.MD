@@ -73,7 +73,7 @@ Connected to razie1l Twitch channel
 <details>
   <summary>Пример объекта #2</summary>
  
-Объект вложенный в другой объект
+Объект вложен в другой объект
 ```json
 "vloggers": {
     "pewdiepie": {
