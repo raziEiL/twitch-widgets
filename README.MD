@@ -140,8 +140,9 @@ Connected to razie1l Twitch channel
 </details>
 
 <details>
-  <summary>:heavy_check_mark: Правильный пример переименования команды `!draw` в `$PRIZE` </summary>
+  <summary>:heavy_check_mark: Правильный пример переименования команд</summary>
  
+ Команда `!draw` была переименована в `$PRIZE`
   ```json
  "commands": {
     "prefix": "$",
@@ -166,8 +167,9 @@ Connected to razie1l Twitch channel
 </details>
 
 <details>
-  <summary>:x: Неправильный пример переименования команды `!draw` в `$PRIZE` </summary>
+  <summary>:x: Неправильный пример переименования команды </summary>
  
+ Команда `!draw` не была переименована в `$PRIZE`. Файл конфигурации поврежден!
   ```json
  "commands": {
     "prefix": "$",
