@@ -140,7 +140,7 @@ Connected to razie1l Twitch channel
 </details>
 
 <details>
-  <summary>:heavy_check_mark: Правильный пример переименования команды `!draw` в `$PRIZE`</summary>
+  <summary>:heavy_check_mark: Правильный пример переименования команды `!draw` в `$PRIZE` </summary>
  
   ```json
  "commands": {
@@ -166,7 +166,7 @@ Connected to razie1l Twitch channel
 </details>
 
 <details>
-  <summary>:x: Неправильный пример переименования команды `!draw` в `$PRIZE`</summary>
+  <summary>:x: Неправильный пример переименования команды `!draw` в `$PRIZE` </summary>
  
   ```json
  "commands": {
