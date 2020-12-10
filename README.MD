@@ -19,13 +19,11 @@ Twitch-events — это консольное приложение предос�
   <summary>Пример правильно отредактированного файла конфигурации</summary>
   
 ```json
-{
-    "twitch": {
-            "password": "oauth:1kxfnxefds3t8zupbm67fhsxd9z1fj",
-            "login": "razie1l",
-            "httpPort": 80,
-            "ircPort": 433
-        },
+"twitch": {
+    "password": "oauth:1kxfnxefds3t8zupbm67fhsxd9z1fj",
+    "login": "razie1l",
+    "httpPort": 80,
+    "ircPort": 433
 }
 ```
 </details>
@@ -66,10 +64,10 @@ Connected to razie1l Twitch channel
   <summary>Пример объекта #1</summary>
 
 ```json
-    "pewdiepie"
-    {
-        "followers": 10000000
-    }
+"pewdiepie"
+{
+    "followers": 10000000
+}
 ```
 </details>
 <details>
@@ -77,12 +75,11 @@ Connected to razie1l Twitch channel
  
 Объект вложенный в другой объект
 ```json
-    "vloggers": {
-        "pewdiepie"
-        {
-            "followers": 10000000
-        }
+"vloggers": {
+    "pewdiepie": {
+        "followers": 10000000
     }
+}
 ```
 </details>
 В файл содержит три основных объекта настроек с именами: `twitch`, `commands`, `debug`. Рассмотрим только первые два объекта отвечающие за пользовательские настройки.
@@ -93,13 +90,11 @@ Connected to razie1l Twitch channel
   <summary>Объект twitch</summary>
   
 ```json
-{
-    "twitch": {
-        "password": "oauth:j8sw4m4ao19551vdpidp5e0c3zxguc",
-        "login": "razie1l",
-        "httpPort": 80,
-        "ircPort": 433
-    },
+"twitch": {
+    "password": "oauth:j8sw4m4ao19551vdpidp5e0c3zxguc",
+    "login": "razie1l",
+    "httpPort": 80,
+    "ircPort": 433
 }
 ```
 </details>
@@ -116,25 +111,23 @@ Connected to razie1l Twitch channel
   <summary>Объект commands</summary>
  
 ```json
-{
-    "commands": {
-        "prefix": "!",
-        "vote": {
-            "name": "vote",
-            "admin": true
-        },
-        "draw": {
-            "name": "draw",
-            "admin": false
-        },
-        "drawstop": {
-            "name": "drawstop",
-            "admin": true
-        },
-        "drawstart": {
-            "name": "drawstart",
-            "admin": true
-        }
+"commands": {
+    "prefix": "!",
+    "vote": {
+        "name": "vote",
+        "admin": true
+    },
+    "draw": {
+        "name": "draw",
+        "admin": false
+    },
+    "drawstop": {
+        "name": "drawstop",
+        "admin": true
+    },
+    "drawstart": {
+        "name": "drawstart",
+        "admin": true
     }
 }
 ``` 
@@ -145,28 +138,26 @@ Connected to razie1l Twitch channel
 |name|Название команды для её вызова|<br>*Значение обязательно должно быть заключено в двойные кавычки!*|
 |admin|При значении `true` команда доступна только стримеру, `false` позволит любому пользователю использовать команду|Не рекомендуется изменять|
 <details>
-  <summary>Пример переименования чат команды `!draw` *розыгрыш* в `$PRIZE`:</summary>
+  <summary>Пример переименования чат команды `!draw` *розыгрыш* в `$PRIZE`</summary>
  
   ```json
- {
-    "commands": {
-        "prefix": "$",
-        "vote": {
-            "name": "vote",
-            "admin": true
-        },
-        "draw": {
-            "name": "PRIZE",
-            "admin": false
-        },
-        "drawstop": {
-            "name": "drawstop",
-            "admin": true
-        },
-        "drawstart": {
-            "name": "drawstart",
-            "admin": true
-        }
+ "commands": {
+    "prefix": "$",
+    "vote": {
+        "name": "vote",
+        "admin": true
+    },
+    "draw": {
+        "name": "PRIZE",
+        "admin": false
+    },
+    "drawstop": {
+        "name": "drawstop",
+        "admin": true
+    },
+    "drawstart": {
+        "name": "drawstart",
+        "admin": true
     }
 }
   ```
