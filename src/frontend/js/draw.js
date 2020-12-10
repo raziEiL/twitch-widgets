@@ -1,5 +1,5 @@
 const request = require("./request");
-const { timestamp } = require("ts-raz-util");
+const { timestamp } = require("@raz1el/util");
 
 let timerCountdown, isWaitsForWinner;
 

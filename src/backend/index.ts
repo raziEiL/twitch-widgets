@@ -6,7 +6,7 @@ import express from "express";
 import fs from "fs";
 import path from "path";
 import tmi from "tmi.js";
-import { REGEX_COMMAND_LINE, REGEX_QUOTES } from "ts-raz-util";
+import { REGEX_COMMAND_LINE, REGEX_QUOTES } from "@raz1el/util";
 import VotePoll from "./src/vote-command";
 import Draw from "./src/draw-command";
 import { removeCommandPrefix } from "./src/helpers";

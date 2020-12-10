@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import { sleepSync } from "@raz1el/util";
 import { Config } from "./types";
 
 // Read external config file (Reqired for pkg build)
@@ -15,11 +16,3 @@ if (!fs.existsSync(configFilename)) {
 }
 
 export const config = JSON.parse(fs.readFileSync(configFilename, { encoding: "utf8" })) as Config;
-
-function sleepSync(milliseconds: number) {
-    const date = Date.now();
-    let currentDate;
-    do {
-        currentDate = Date.now() - date;
-    } while (currentDate < milliseconds);
-}

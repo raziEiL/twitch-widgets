@@ -1,5 +1,4 @@
-import { timestamp } from "ts-raz-util";
-import { getRandomInt } from "./helpers";
+import { timestamp, getRandomInt } from "@raz1el/util";
 import { DrawData } from "./types";
 import { config } from "./pkg-config";
 

@@ -1,11 +1,11 @@
 {
-    "name": "twitch-events",
+    "name": "twitch-widgets",
     "version": "1.0.0",
-    "description": "Provides Twitch chat commands for broadcaster to create custom events",
+    "description": "Provides Twitch chat commands and web-widgets for broadcasters",
     "main": "dist/backend/index.js",
     "scripts": {
         "start": "node --unhandled-rejections=strict dist/backend/index.js",
-        "start-pkg": "cd pkg-release && cmd /k twitch-events-win",
+        "start-pkg": "cd pkg-release && cmd /k twitch-widgets-win",
         "build": "npm run build-full && npm run build-pkg",
         "build-full": "npm run build-front && npm run build-end",
         "build-dev": "gulp build-dev && rm -rf dist/backend && tsc --sourceMap true -p tsconfig.dev.json",
@@ -23,7 +23,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/raziEiL/twitch-events.git"
+        "url": "https://github.com/raziEiL/twitch-widgets.git"
     },
     "author": {
         "name": "Denis Medvedev (raziEiL)",
@@ -94,8 +94,8 @@
         "vinyl-source-stream": "^2.0.0"
     },
     "dependencies": {
+        "@raz1el/util": "^1.0.5",
         "express": "^4.17.1",
-        "tmi.js": "^1.5.0",
-        "ts-raz-util": "^1.0.3"
+        "tmi.js": "^1.5.0"
     }
 }
