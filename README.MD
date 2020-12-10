@@ -81,7 +81,8 @@ Connected to razie1l Twitch channel
     }
 }
 ```
-</details>
+</details> 
+
 В файл содержит три основных объекта настроек с именами: `twitch`, `commands`, `debug`. Рассмотрим только первые два объекта отвечающие за пользовательские настройки.
 
 ## twitch
