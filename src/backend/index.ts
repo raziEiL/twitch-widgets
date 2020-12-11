@@ -212,5 +212,6 @@ client.on("message", (channel, userState, message, self) => {
 });
 
 function say(channel: string, message: string) {
-    client.say(channel, message).catch(console.error);
+    if (config.commands.notify)
+        client.say(channel, message).catch(console.error);
 }

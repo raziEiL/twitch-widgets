@@ -41,6 +41,7 @@ export interface Debug {
 
 export interface Commands {
     prefix: string;
+    notify: boolean;
     vote: Command;
     draw: Command;
     drawstop: Command;
