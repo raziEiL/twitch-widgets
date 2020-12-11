@@ -112,6 +112,7 @@ Connected to razie1l Twitch channel
 | Ключ | Значение | Примечание |
 |-|-|-|
 |prefix|Символ приставки команд|Подробная информация в разделе [Команды](#команды)<br>*Значение обязательно должно быть заключено в двойные кавычки!*|
+|notify|При значении `true` включает сообщения приложения в чате Twitch, `false` отключает сообщения||
 |name|Название команды для её вызова|<br>*Значение обязательно должно быть заключено в двойные кавычки!*|
 |admin|При значении `true` команда доступна только стримеру, `false` позволит любому пользователю использовать команду|Не рекомендуется изменять|
 <details>
@@ -120,6 +121,7 @@ Connected to razie1l Twitch channel
 ```json
 "commands": {
     "prefix": "!",
+    "notify": true,
     "vote": {
         "name": "vote",
         "admin": true
@@ -147,6 +149,7 @@ Connected to razie1l Twitch channel
   ```json
 "commands": {
     "prefix": "$",
+    "notify": true,
     "vote": {
         "name": "vote",
         "admin": true
@@ -174,6 +177,7 @@ Connected to razie1l Twitch channel
   ```json
 "commands": {
     "prefix": "$",
+    "notify": true,
     "vote": {
         "name": "vote",
         "admin": true
