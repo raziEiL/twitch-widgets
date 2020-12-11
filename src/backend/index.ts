@@ -154,10 +154,9 @@ client.on("message", (channel, userState, message, self) => {
             break;
         }
         case config.commands.draw.name: {
-            if (draw) {
-                draw.add(username);
+            if (draw && draw.add(username))
                 return;
-            }
+
             if (!isAdmin)
                 return;
 

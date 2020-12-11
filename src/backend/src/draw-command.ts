@@ -33,22 +33,22 @@ export default class Draw {
         this.lastWinner = "";
     }
     add(user: string) {
-        if (!this.endTimestamp || this.isEnded()) {
+        if (!this.endTimestamp || this.hasEnded()) {
             console.log(`${user} cannot vote now!`);
-            return;
+            return false;
         }
         if (config.debug.fakeUsers)
             this.users.add(user + Date.now().toString());
         else
             this.users.add(user);
-        return this;
+        return true;
     }
     start() {
         if (this.endTimestamp)
             return;
         this.endTimestamp = timestamp() + this.countdownSeconds;
     }
-    isEnded() {
+    hasEnded() {
         return timestamp() > this.endTimestamp;
     }
     getRandomWinner() {
