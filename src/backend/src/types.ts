@@ -51,6 +51,7 @@ export interface Commands {
 export interface Command {
     name: string;
     admin: boolean;
+    winnerMessage: string | undefined;
 }
 
 export interface Twitch {
