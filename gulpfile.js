@@ -21,6 +21,9 @@ const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const merge = require("merge-stream");
+// Helpers
+const { getFilesList } = require("@raz1el/util");
+const path = require("path");
 // Список css классов (используются для js), которые игнорируются uncss
 const UNCSS_IGNORE = [".hidden"];
 
@@ -28,7 +31,6 @@ const UNCSS_IGNORE = [".hidden"];
 const ROOT = "./";
 const DIST = "dist/frontend/";
 const SRC = "src/frontend/";
-const JS_FILES = ["vote", "draw"];
 
 const PATH = {
     // готовые файлы после сборки
@@ -40,7 +42,7 @@ const PATH = {
     },
     // пути исходных файлов
     src: {
-        css: ROOT + SRC + "scss/**/*.scss",
+        css: ROOT + SRC + "scss/",
         js: ROOT + SRC + "js/",
         img: ROOT + SRC + "img/*",
         font: ROOT + SRC + "font/*",
@@ -49,10 +51,17 @@ const PATH = {
 };
 // \ Пути
 
-gulp.task("build-dev:sass", sassCallback);
+const SASS_COMPILE_TYPE = {
+    MULTIPLE_OUT_FILES: 0, // Файлы считываются только в root директории scss. На выходе получается несколько файлов стилей
+    MERGE_FILES: 1 // Файлы считываются рекурсивно в root директории scss. На выходе получается один файл стилей
+};
+
+gulp.task("build-dev:sass", () => {
+    return sassBuild(false, SASS_COMPILE_TYPE.MULTIPLE_OUT_FILES);
+});
 
 gulp.task("build:sass", () => {
-    return sassCallback(true);
+    return sassBuild(true, SASS_COMPILE_TYPE.MULTIPLE_OUT_FILES);
 });
 /* 
 gulp.task("build-dev:js", jsCallback);
@@ -117,22 +126,48 @@ gulp.task("watch-dev", gulp.series(["build-dev", "browserSync"], () => {
     gulp.watch(PATH.src.html, gulp.series(["build:font"]));
 }));
 
-function sassCallback(production = false) {
-    if (production) {
-        return gulp.src(PATH.src.css)
+function sassBuild(production, sassCompileType) {
+    switch (sassCompileType) {
+        case SASS_COMPILE_TYPE.MULTIPLE_OUT_FILES: {
+            return merge(getFilesList(PATH.src.css)
+                .map(file => {
+                    return sassCallback({
+                        srcPath: file,
+                        outPath: PATH.build.css,
+                        outFileName: path.basename(file).replace(/(.scss|.css)$/, "") + ".min.css",
+                        htmlPath: PATH.src.html,
+                        production
+                    });
+                }));
+        }
+        case SASS_COMPILE_TYPE.MERGE_FILES: {
+            return sassCallback({
+                srcPath: PATH.src.css + "**/*.scss",
+                outPath: PATH.build.css,
+                outFileName: "style.min.css",
+                htmlPath: PATH.src.html,
+                production
+            });
+        }
+    }
+}
+
+function sassCallback(config) {
+    if (config.production) {
+        return gulp.src(config.srcPath)
             .pipe(sass({}).on("error", sass.logError))
             .pipe(postcss([autoprefixer(), cssvariables({
                 preserve: true
             }), calc()]))
-            .pipe(concat("style.min.css"))
+            .pipe(concat(config.outFileName))
             .pipe(uncss({
-                html: [PATH.src.html],
+                html: [config.htmlPath],
                 ignore: UNCSS_IGNORE
             }))
             .pipe(cleanCSS())
-            .pipe(gulp.dest(PATH.build.css));
+            .pipe(gulp.dest(config.outPath));
     }
-    return gulp.src(PATH.src.css)
+    return gulp.src(config.srcPath)
         .pipe(sourcemaps.init())
         .pipe(sass({
             outputStyle: "expanded"
@@ -140,53 +175,54 @@ function sassCallback(production = false) {
         .pipe(postcss([autoprefixer(), cssvariables({
             preserve: true
         }), calc()]))
-        .pipe(concat("style.css"))
+        .pipe(concat(config.outFileName))
         .pipe(uncss({
-            html: [PATH.src.html],
+            html: [config.htmlPath],
             ignore: UNCSS_IGNORE
         }))
-        .pipe(gulp.dest(PATH.build.css))
-        .pipe(rename(function (path) {
+        .pipe(gulp.dest(config.outPath))
+        .pipe(rename((path) => {
             path.basename += ".min";
         }))
         .pipe(cleanCSS())
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(PATH.build.css));
+        .pipe(gulp.dest(config.outPath));
 }
-
-/* function jsCallback(production) {
+/* 
+function jsCallback(production) {
     if (production) {
-        return gulp.src(PATH.src.js)
-            .pipe(concat("scripts.min.js"))
-            .pipe(uglify())
-            .pipe(gulp.dest(PATH.build.js));
-    }
-    return gulp.src(PATH.src.js)
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(concat("scripts.js"))
-        .pipe(gulp.dest(PATH.build.js))
-        .pipe(rename(function (path) {
-            path.basename += ".min";
-        }))
-        .pipe(uglify())
-        .pipe(sourcemaps.write("./"))
-        .pipe(gulp.dest(PATH.build.js)); 
+        return gulp.src(PATH.src.js + "**//*js")
+.pipe(concat("scripts.min.js"))
+.pipe(uglify())
+.pipe(gulp.dest(PATH.build.js));
 }
- */
+return gulp.src(PATH.src.js)
+.pipe(sourcemaps.init({ loadMaps: true }))
+.pipe(concat("scripts.js"))
+.pipe(gulp.dest(PATH.build.js))
+.pipe(rename(function (path) {
+path.basename += ".min";
+}))
+.pipe(uglify())
+.pipe(sourcemaps.write("./"))
+.pipe(gulp.dest(PATH.build.js));
+}
+*/
 // https://stackoverflow.com/questions/41043032/browserify-parseerror-import-and-export-may-appear-only-with-sourcetype
 function jsBrowserify() {
-    return merge(JS_FILES.map(file => {
-        return browserify({
-            entries: [PATH.src.js + file + ".js"],
-            debug: true
-        }).bundle()
-            .pipe(source(file + ".min.js"))
-            .pipe(buffer())
-            .pipe(sourcemaps.init({ loadMaps: true }))
-            // Add transformation tasks to the pipeline here.
-            .pipe(uglify())
-            .on("error", console.error)
-            .pipe(sourcemaps.write("./"))
-            .pipe(gulp.dest(PATH.build.js));
-    }));
+    return merge(getFilesList(PATH.src.js)
+        .map(file => {
+            return browserify({
+                entries: [file],
+                debug: true
+            }).bundle()
+                .pipe(source(path.basename(file).replace(/(.js)$/, "") + ".min.js"))
+                .pipe(buffer())
+                .pipe(sourcemaps.init({ loadMaps: true }))
+                // Add transformation tasks to the pipeline here.
+                .pipe(uglify())
+                .on("error", console.error)
+                .pipe(sourcemaps.write("./"))
+                .pipe(gulp.dest(PATH.build.js));
+        }));
 }

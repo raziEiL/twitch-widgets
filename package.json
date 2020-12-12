@@ -1,6 +1,6 @@
 {
     "name": "twitch-widgets",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Provides Twitch chat commands and web-widgets for broadcasters",
     "main": "dist/backend/index.js",
     "scripts": {
@@ -58,14 +58,14 @@
     "devDependencies": {
         "@types/express": "^4.17.9",
         "@types/tmi.js": "^1.4.2",
-        "@typescript-eslint/eslint-plugin": "^4.9.0",
-        "@typescript-eslint/eslint-plugin-tslint": "^4.9.0",
-        "@typescript-eslint/parser": "^4.9.0",
+        "@typescript-eslint/eslint-plugin": "^4.9.1",
+        "@typescript-eslint/eslint-plugin-tslint": "^4.9.1",
+        "@typescript-eslint/parser": "^4.9.1",
         "autoprefixer": "^9.8.6",
         "browser-sync": "^2.26.7",
         "browserify": "^17.0.0",
         "del": "^6.0.0",
-        "eslint": "^7.14.0",
+        "eslint": "^7.15.0",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-jest": "^24.1.3",
         "eslint-plugin-typescript": "^0.14.0",
@@ -89,13 +89,14 @@
         "postcss-css-variables": "^0.17.0",
         "ts-jest": "^26.4.4",
         "tslint": "^6.1.3",
-        "typescript": "^4.1.2",
+        "typescript": "^4.1.3",
         "vinyl-buffer": "^1.0.1",
         "vinyl-source-stream": "^2.0.0"
     },
     "dependencies": {
-        "@raz1el/util": "^1.0.5",
+        "@raz1el/util": "^1.0.6",
         "express": "^4.17.1",
+        "js-cookie": "^2.2.1",
         "tmi.js": "^1.5.0"
     }
 }

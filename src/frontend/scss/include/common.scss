@@ -1,14 +1,6 @@
-@import "vars";
-
-/* html {
-    background: linear-gradient(to right, white, #f1faee);
-}
- */
 body {
     margin: 0;
-    font-family: 'Roboto', sans-serif;
-    color: $color-text;
-    background: linear-gradient(to right, white, #f1faee);
+    font-family: sans-serif;
 }
 
 main {
@@ -26,16 +18,16 @@ p {
 }
 
 a {
-    color: $color-a;
+    /*   color: $color-a; */
     text-decoration: none;
 
     &:hover {
         text-decoration: underline;
     }
 
-    &:visited {
+    /*     &:visited {
         color: $color-a;
-    }
+    } */
 }
 
 .text-center {

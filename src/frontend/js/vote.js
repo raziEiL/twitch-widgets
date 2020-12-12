@@ -1,4 +1,4 @@
-const request = require("./request");
+const request = require("./incude/request");
 
 setInterval(() => {
     request("http://localhost/api/vote", voteCallback);

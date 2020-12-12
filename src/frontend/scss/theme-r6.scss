@@ -1,0 +1,12 @@
+// Theme id 1
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+$color-a: #ce61df;
+$color-b: black;
+$color-text:black;
+$color-bg: white;
+$font: 'Montserrat',
+sans-serif;
+$color-icon: #ce61df;
+
+@import "include/theme-base.scss";

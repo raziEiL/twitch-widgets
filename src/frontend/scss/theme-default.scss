@@ -1,0 +1,12 @@
+// Theme id 0
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+$color-a: #E94957;
+$color-b: #5590B4;
+$color-text:black;
+$color-bg: white;
+$font: 'Roboto',
+sans-serif;
+$color-icon: black;
+
+@import "include/theme-base.scss";

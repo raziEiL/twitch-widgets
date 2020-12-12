@@ -206,7 +206,9 @@ Connected to razie1l Twitch channel
 3. Скопируйте URL страницы из браузера
 4. В OBS создайте новый источник `Браузер` и вставьте ранее скопированный URL в поле `Адрес URL`
 
-Удалите CSS свойства из соответствующего поля, чтобы сделать фон виджета непрозрачным.
+## Примичание
+* Если OBS показывает не актуальную информацию в виджете выберете `Браузер` в источниках и нажмите `Обновить`.
+* По умолчанию OBS приминяет прозрачный фон к страницам. Чтобы сделать фон непрозрачным удалите свойство `background-color` или все свойста из поля CSS.
 
 # Изменение дизайна виджетов через OBS
 Для изменения дизайна виджетов отредактируйте поле CSS выбрав `Браузер` в `Источники` OBS. 
@@ -223,17 +225,17 @@ body {
 ```
 ![](https://github.com/raziEiL/twitch-widgets/blob/master/git-img/1.png)
 ## Фон
-За фоновый цвет виджетов отвечает CSS свойство `background` элемента `body`. По умолчанию используется белый цвет фона, в примере ниже розовый.
+За фоновый цвет виджетов (подложку) отвечает CSS свойство `background-color` элемента `body`. По умолчанию используется белый цвет фона, в примере ниже розовый.
 ```css
 body {
-    background: hotpink;
+    background-color: hotpink;
 }
 ```
 ![](https://github.com/raziEiL/twitch-widgets/blob/master/git-img/2.png)  
 В этом примере прозрачный фон.
 ```css
 body {
-    background: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
 }
 ```
 ![](https://github.com/raziEiL/twitch-widgets/blob/master/git-img/3.png)
@@ -241,13 +243,21 @@ body {
 Некоторые элементы используют класс `.color-bg-a` и `.color-bg-b` для применения цвета фона. Изменим цвет прогресса голосования на зеленый для первого участника и желтый для второго.
 ```css
 .color-bg-a {
-    background: green;
+    background-color: green;
 }
 .color-bg-b {
-    background: yellow;
+    background-color: yellow;
 }
 ```
 ![](https://github.com/raziEiL/twitch-widgets/blob/master/git-img/4.png)
+## Иконки
+За цвет иконок отвечает свойство `fill` класса `icon`.
+```css
+.icon {
+    fill: green;
+}
+```
+![](https://github.com/raziEiL/twitch-widgets/blob/master/git-img/6.png)
 # Как работает приложение
 1. При запуске приложения происходит авторизация с Twitch API и предоставляется доступ к чату вашего Twitch канала. 
 2. На вашем компьютере создается локальный веб-сервер, который по средствам REST API предоставляет данные Twitch обработанные приложением.

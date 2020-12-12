@@ -1,0 +1,40 @@
+// Text
+.color-a {
+    color: $color-a;
+}
+
+.color-b {
+    color: $color-b;
+}
+
+// Background
+.color-bg-a {
+    background-color: $color-a;
+}
+
+.color-bg-b {
+    background-color: $color-b;
+}
+
+// Svg icons
+.icon {
+    fill: $color-icon;
+}
+
+body {
+    font-family: $font;
+    color: $color-text;
+    background-color: $color-bg;
+}
+
+#theme {
+    font-family: $font;
+}
+
+a {
+    color: $color-a;
+
+    &:visited {
+        color: $color-a;
+    }
+}

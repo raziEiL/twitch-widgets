@@ -1,4 +1,4 @@
-const request = require("./request");
+const request = require("./incude/request");
 const { timestamp } = require("@raz1el/util");
 
 let timerCountdown, isWaitsForWinner;

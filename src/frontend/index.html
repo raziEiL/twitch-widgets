@@ -6,22 +6,29 @@
     <meta name="author" content="Medvedev Denis (raziEiL)">
     <title>Twitch Widgets</title>
     <link rel="stylesheet" href="css/style.min.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="index-body">
-    <main class="index-main text-center">
-        <h1>Twitch виджеты</h1>
-        <a href="vote.html">
-            <p>Голосование</p>
-        </a>
-        <a href="draw.html">
-            <p>Розыгрыш</p>
-        </a>
-        <a href="https://github.com/raziEiL/twitch-widgets/blob/master/README.MD">
-            <h3>Руководство пользователя</h3>
-        </a>
+    <main class="index-main">
+        <div class="index-theme">
+            <label for="theme">Тема:</label>
+            <select name="theme" id="theme">
+                <option value="default" selected>По умолчанию</option>
+                <option value="r6">RainbowSix</option>
+            </select>
+        </div>
+        <div class="text-center">
+            <h1>Twitch виджеты</h1>
+            <a href="vote.html">
+                <p>Голосование</p>
+            </a>
+            <a href="draw.html">
+                <p>Розыгрыш</p>
+            </a>
+            <a href="https://github.com/raziEiL/twitch-widgets/blob/master/README.MD">
+                <h3>Руководство пользователя</h3>
+            </a>
+        </div>
     </main>
     <footer>
         <div class="container text-center">
@@ -30,6 +37,7 @@
             <p class="index-p">2020</p>
         </div>
     </footer>
+    <script src="js/theme.min.js"></script>
 </body>
 
 </html>
