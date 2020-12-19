@@ -1,8 +1,8 @@
 import tmi from "tmi.js";
 import { REGEX_COMMAND_LINE, REGEX_QUOTES } from "@raz1el/util";
-import VotePoll from "./vote-command";
-import Draw from "./draw-command";
-import { removeCommandPrefix } from "./helpers";
+import VotePoll from "./commands/vote";
+import Draw from "./commands/draw";
+import { removeCommandPrefix, log, logError } from "./helpers";
 import { config } from "./pkg-config";
 
 export let vote: VotePoll | undefined;
@@ -37,10 +37,10 @@ const client = tmi.Client({
 
 client.connect()
     .then(() => {
-        console.log(`Connected to ${config.twitch.login} Twitch channel`);
+        log(`Connected to ${config.twitch.login} Twitch channel`);
     })
     .catch(e => {
-        console.error("Failed to connect to Twitch channel. Reason:", e);
+        logError("Failed to connect to Twitch channel. Reason: " + e);
     });
 
 client.on("message", (channel, userState, message, self) => {
@@ -62,19 +62,19 @@ client.on("message", (channel, userState, message, self) => {
     if (!command)
         return;
 
-    const isAdmin = username === config.twitch.login;
+    const isAdmin = userState.mod || userState["user-type"] === "mod" || username.toLowerCase() === config.twitch.login.toLowerCase();
 
     if (!isAdmin && adminCommands.includes(command)) {
-        console.log(`user: ${username} has no access to the ${command} command`);
+        log(`user: ${username} has no access to the ${command} command`);
         return;
     }
 
-    console.log(`user: ${username}, command: ${command}, args:`, args);
+    log(`user: ${username}, command: ${command}, args: ${args}`);
 
     switch (command) {
         case config.commands.vote.name: {
             if (vote) {
-                console.log("The vote has ended");
+                log("The vote has ended");
                 say(channel, "/me " + vote.getWinnerMessage());
                 voteList = vote.getHtmlVotelistPage();
                 vote = undefined;
@@ -87,7 +87,7 @@ client.on("message", (channel, userState, message, self) => {
             else {
                 vote = new VotePoll(args);
                 say(channel, `@${username} ` + vote.getStartMessage());
-                console.log(`Voting progress bar is available at: http://localhost:${config.twitch.httpPort}/vote`);
+                log(`Voting progress bar is available at: http://localhost:${config.twitch.httpPort}/vote`);
             }
             break;
         }
@@ -105,13 +105,13 @@ client.on("message", (channel, userState, message, self) => {
             else {
                 draw = new Draw(args);
                 say(channel, `@${username} ` + draw.getStartMessage());
-                console.log(`Prize drawing status is available at: http://localhost:${config.twitch.httpPort}/draw`);
+                log(`Prize drawing status is available at: http://localhost:${config.twitch.httpPort}/draw`);
             }
             break;
         }
         case config.commands.drawstart.name: {
             if (draw) {
-                console.log("The draw has started!");
+                log("The draw has started!");
                 draw.start();
                 say(channel, "/me " + draw.getStartedMessage());
                 return;
@@ -120,7 +120,7 @@ client.on("message", (channel, userState, message, self) => {
         }
         case config.commands.drawstop.name: {
             if (draw) {
-                console.log("The draw has stopped!");
+                log("The draw has stopped!");
                 draw = undefined;
                 return;
             }
@@ -138,17 +138,17 @@ client.on("message", (channel, userState, message, self) => {
                         break;
                     }
                     default: {
-                        console.log(`Command ${command} not found`);
+                        log(`Command ${command} not found`);
                     }
                 }
             }
             else
-                console.log(`Command ${command} not found`);
+                log(`Command ${command} not found`);
         }
     }
 });
 
 export function say(channel: string, message: string, ignoreNotify?: boolean) {
     if (ignoreNotify || config.commands.notify)
-        client.say(channel, message).catch(console.error);
+        client.say(channel, message).catch(logError);
 }

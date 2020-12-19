@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import { sleepSync } from "@raz1el/util";
 import { Config } from "./types";
+import { logError } from "./helpers";
 
 // Read external config file (Reqired for pkg build)
 export const isPkg = __dirname.includes("snapshot");
@@ -10,7 +11,7 @@ export const configFilename = path.join(isPkg ? path.dirname(process.execPath) :
 
 if (!fs.existsSync(configFilename)) {
     const message = `Configuration file not found in ${configFilename}`;
-    console.error(message);
+    logError(message);
     sleepSync(3000);
     throw new Error(message);
 }

@@ -1,11 +1,13 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
+import ngrok from "@raz1el/ngrok";
 
 process.on("uncaughtException", (err) => {
     fs.writeFileSync("crash.log", err.message);
 });
 
+import { log, logError } from "./src/helpers";
 import { vote, voteList, draw, say } from "./src/twitch";
 import { config } from "./src/pkg-config";
 /*
@@ -62,5 +64,16 @@ app.get("/api/draw/winner", (req, res) => {
 });
 
 app.listen(config.twitch.httpPort, () => {
-    console.log(`Http server listening at http://localhost:${config.twitch.httpPort}`);
+    log(`Local web server URL: http://localhost:${config.twitch.httpPort}`);
 });
+/*
+|==========================================================================
+| NGROK
+|==========================================================================
+*/
+if (config.ngrok.enable) {
+    config.ngrok.addr = config.twitch.httpPort;
+    ngrok.connect(config.ngrok).then(url => { log("Public web server URL: " + url) }).catch(logError);
+}
+else
+    log("Public web server URL: disabled");

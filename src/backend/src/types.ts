@@ -32,6 +32,7 @@ export interface Config {
     debug: Debug;
     twitch: Twitch;
     commands: Commands;
+    ngrok: NgrokConfig;
 }
 
 export interface Debug {
@@ -59,4 +60,11 @@ export interface Twitch {
     login: string;
     httpPort: number;
     ircPort: number;
+}
+
+// ngrok
+import { INgrokOptions } from "ngrok";
+
+export interface NgrokConfig extends INgrokOptions {
+    enable: boolean;
 }

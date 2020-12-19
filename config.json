@@ -26,6 +26,14 @@
             "admin": true
         }
     },
+    "ngrok": {
+        "enable": false,
+        "proto": "",
+        "auth": "",
+        "subdomain": "",
+        "authtoken": "",
+        "region": ""
+    },
     "debug": {
         "twitch": false,
         "fakeUsers": false

@@ -1,6 +1,7 @@
 import { timestamp, getRandomInt } from "@raz1el/util";
-import { DrawData } from "./types";
-import { config } from "./pkg-config";
+import { DrawData } from "../types";
+import { log } from "../helpers";
+import { config } from "../pkg-config";
 
 const COMMAND_DRAW = config.commands.prefix + config.commands.draw.name;
 const COMMAND_START = config.commands.prefix + config.commands.drawstart.name;
@@ -34,7 +35,7 @@ export default class Draw {
     }
     add(user: string) {
         if (!this.endTimestamp || this.hasEnded()) {
-            console.log(`${user} cannot vote now!`);
+            log(`${user} cannot vote now!`);
             return false;
         }
         if (config.debug.fakeUsers)

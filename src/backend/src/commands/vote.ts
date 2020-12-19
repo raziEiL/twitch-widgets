@@ -1,7 +1,7 @@
 
-import { VoteCandidates, VoteCount, VoteCandidatesData } from "./types";
-import { addCommandPrefix } from "./helpers";
-import { config } from "./pkg-config";
+import { VoteCandidates, VoteCount, VoteCandidatesData } from "../types";
+import { addCommandPrefix, log } from "../helpers";
+import { config } from "../pkg-config";
 
 const COMMAND_VOTE = config.commands.prefix + config.commands.vote.name;
 const MESSAGE_START = `Голосование началось! Для завершения напишите ${COMMAND_VOTE}`;
@@ -34,15 +34,15 @@ export default class VotePoll {
     }
     vote(user: string, candidate: string) {
         if (candidate !== this.name.condidateA && candidate !== this.name.condidateB) {
-            console.log(`${user} not allowed to vote for unknown candidate ${candidate}`);
+            log(`${user} not allowed to vote for unknown candidate ${candidate}`);
             return;
         }
         else if (this.votes.has(user)) {
-            console.log(`${user} has already voted!`);
+            log(`${user} has already voted!`);
             return;
         }
         this.votes.set(config.debug.fakeUsers ? Date.now().toString() : user, candidate);
-        console.log(`${user} voted for ${candidate}!`);
+        log(`${user} voted for ${candidate}!`);
         return this;
     }
     getVoteCount(): VoteCount {
