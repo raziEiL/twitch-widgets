@@ -38,3 +38,26 @@ a {
 .hidden {
     display: none !important;
 }
+
+.anim-opacity {
+    transition: opacity 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.opacity-none {
+    opacity: 0 !important;
+}
+
+.anim-fade-in {
+    animation: fade-in 1s ease-in 0.25s forwards;
+    opacity: 0;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

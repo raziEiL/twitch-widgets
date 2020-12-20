@@ -1,3 +1,4 @@
+require("./incude/obs");
 const cookie = require("js-cookie");
 const buildThemePath = (theme) => `css/theme-${theme}.min.css`;
 const link = getThemeLink();
@@ -7,11 +8,10 @@ loadTheme();
 function loadTheme() {
     const theme = cookie.get("theme");
 
-    if (!theme) {
+    if (theme)
+        changeTheme(theme);
+    else
         console.log("Cookie theme not found. Use deafult theme.");
-        return;
-    }
-    changeTheme(theme);
 
     // index.html
     const select = document.querySelector("#theme");
