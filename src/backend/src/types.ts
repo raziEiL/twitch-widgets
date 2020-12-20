@@ -63,7 +63,7 @@ export interface Twitch {
 }
 
 // ngrok
-import { INgrokOptions } from "ngrok";
+import { INgrokOptions } from "@raz1el/ngrok";
 
 export interface NgrokConfig extends INgrokOptions {
     enable: boolean;
