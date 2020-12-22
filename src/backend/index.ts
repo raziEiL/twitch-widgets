@@ -20,10 +20,6 @@ const PATH = path.join(__dirname, "..", "frontend");
 
 app.use(express.static(PATH));
 
-app.get("/vote", (req, res) => {
-    res.sendFile(path.join(PATH, "vote.html"));
-});
-
 app.get("/vote/list", (req, res) => {
     if (vote)
         res.send(vote.getHtmlVotelistPage());
@@ -31,10 +27,6 @@ app.get("/vote/list", (req, res) => {
         res.send(voteList);
     else
         res.status(503).send("The voting is not started yet!");
-});
-
-app.get("/draw", (req, res) => {
-    res.sendFile(path.join(PATH, "draw.html"));
 });
 
 app.get("/api/vote", (req, res) => {
