@@ -1,3 +1,5 @@
+const DEFAULT_THEME = "default";
+
 require("./incude/obs");
 const cookie = require("js-cookie");
 const buildThemePath = (theme) => `css/theme-${theme}.min.css`;
@@ -44,7 +46,7 @@ function getThemeLink() {
     const newlink = document.createElement("link");
     newlink.setAttribute("rel", "stylesheet");
     newlink.setAttribute("type", "text/css");
-    newlink.setAttribute("href", buildThemePath("default"));
+    newlink.setAttribute("href", buildThemePath(DEFAULT_THEME));
     document.head.append(newlink);
     return newlink;
 }
