@@ -1,4 +1,6 @@
-module.exports = (url, callback) => {
+const url = new URL(document.URL).origin;
+
+module.exports = (path, callback) => {
     let httpRequest;
 
     if (window.XMLHttpRequest) { // Mozilla, Safari, ...
@@ -23,6 +25,6 @@ module.exports = (url, callback) => {
     }
 
     httpRequest.onreadystatechange = () => callback(httpRequest);
-    httpRequest.open("GET", url, true);
+    httpRequest.open("GET", url + path, true);
     httpRequest.send();
 };

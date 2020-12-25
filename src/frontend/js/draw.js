@@ -4,8 +4,8 @@ const { timestamp } = require("@raz1el/util");
 let timerCountdown, isWaitsForWinner;
 
 const timerApi = setInterval(() => {
-    request("http://localhost/api/draw", drawCallback);
-}, 1000);
+    request("/api/draw", drawCallback);
+}, 5000);
 
 function drawCallback(httpRequest) {
     if (httpRequest.readyState == 4) {
@@ -72,7 +72,7 @@ function sendWinnerRequset() {
     console.log("sendWinnerRequset");
     isWaitsForWinner = true;
 
-    request("http://localhost/api/draw/winner", (httpRequest) => {
+    request("/api/draw/winner", (httpRequest) => {
         if (httpRequest.readyState == 4) {
             if (httpRequest.status == 200)
                 completeDrawing(httpRequest.responseText);

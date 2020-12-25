@@ -1,8 +1,8 @@
 const request = require("./incude/request");
 
 setInterval(() => {
-    request("http://localhost/api/vote", voteCallback);
-}, 1000);
+    request("/api/vote", voteCallback);
+}, 5000);
 
 function voteCallback(httpRequest) {
     if (httpRequest.readyState == 4) {
