@@ -9,17 +9,13 @@ export let vote: VotePoll | undefined;
 export let voteList: string | undefined;
 export let draw: Draw | undefined;
 
-const MESSAGE_MAX_CHARS = 96;
-const adminCommands: string[] = [];
-
-for (const key in config.commands) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    // @ts-ignore
-    if (config.commands[key].admin)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        // @ts-ignore
-        adminCommands.push(config.commands[key].name);
+enum AccessFlags {
+    User,
+    Admin,
+    Mod
 }
+
+const MESSAGE_MAX_CHARS = 96;
 
 const client = tmi.Client({
     options: { debug: config.debug.twitch },
@@ -62,9 +58,9 @@ client.on("message", (channel, userState, message, self) => {
     if (!command)
         return;
 
-    const isAdmin = userState.mod || userState["user-type"] === "mod" || username.toLowerCase() === config.twitch.login.toLowerCase();
+    const access = hasAccess(userState, username, command);
 
-    if (!isAdmin && adminCommands.includes(command)) {
+    if (!access && command !== config.commands.draw.name) {
         log(`user: ${username} has no access to the ${command} command`);
         return;
     }
@@ -87,7 +83,7 @@ client.on("message", (channel, userState, message, self) => {
             else {
                 vote = new VotePoll(args);
                 say(channel, `@${username} ` + vote.getStartMessage());
-                log(`Voting progress bar is available at: http://localhost:${config.twitch.httpPort}/vote`);
+                log(`Voting progress bar is available at: http://localhost:${config.twitch.httpPort}/vote.html`);
             }
             break;
         }
@@ -95,7 +91,7 @@ client.on("message", (channel, userState, message, self) => {
             if (draw && draw.add(username))
                 return;
 
-            if (!isAdmin)
+            if (!access)
                 return;
 
             const errorMessage = Draw.isInvalidParams(args);
@@ -105,7 +101,7 @@ client.on("message", (channel, userState, message, self) => {
             else {
                 draw = new Draw(args);
                 say(channel, `@${username} ` + draw.getStartMessage());
-                log(`Prize drawing status is available at: http://localhost:${config.twitch.httpPort}/draw`);
+                log(`Prize drawing status is available at: http://localhost:${config.twitch.httpPort}/draw.html`);
             }
             break;
         }
@@ -147,6 +143,14 @@ client.on("message", (channel, userState, message, self) => {
         }
     }
 });
+
+function hasAccess(userState: tmi.ChatUserstate, username: string, command: string) {
+    // @ts-ignore
+    if (config.commands[command] && config.commands[command].accessFlag)
+        // @ts-ignore
+        return (config.commands[command].accessFlag & AccessFlags.Mod) && (userState.mod || userState["user-type"] === "mod") || username.toLowerCase() === config.twitch.login.toLowerCase();
+    return true;
+}
 
 export function say(channel: string, message: string, ignoreNotify?: boolean) {
     if (ignoreNotify || config.commands.notify)

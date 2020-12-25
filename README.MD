@@ -145,7 +145,7 @@ Twitch Widgets — это консольное приложение предос
 |prefix|Символ приставки команд|Подробная информация в разделе [Команды](#команды)<br>*Значение обязательно должно быть заключено в двойные кавычки!*|
 |notify|При значении `true` включает сообщения приложения в чате Twitch, `false` отключает сообщения||
 |name|Название команды для её вызова|<br>*Значение обязательно должно быть заключено в двойные кавычки!*|
-|admin|При значении `true` команда доступна только стримеру, `false` позволит любому пользователю использовать команду|Не рекомендуется изменять|
+|accessFlag|Значение `0` - позволит любому пользователю использовать команду, `1` - только стримеру, `2` - модератору, `3`- стримеру и модератору||
 <details>
   <summary>Объект commands</summary>
  
@@ -155,19 +155,19 @@ Twitch Widgets — это консольное приложение предос
     "notify": true,
     "vote": {
         "name": "vote",
-        "admin": true
+        "accessFlag": 3
     },
     "draw": {
         "name": "draw",
-        "admin": false
+        "accessFlag": 3
     },
     "drawstop": {
         "name": "drawstop",
-        "admin": true
+        "accessFlag": 3
     },
     "drawstart": {
         "name": "drawstart",
-        "admin": true
+        "accessFlag": 3
     }
 }
 ``` 
@@ -183,19 +183,19 @@ Twitch Widgets — это консольное приложение предос
     "notify": true,
     "vote": {
         "name": "vote",
-        "admin": true
+        "accessFlag": 3
     },
     "draw": {
         "name": "PRIZE",
-        "admin": false
+        "accessFlag": 3
     },
     "drawstop": {
         "name": "drawstop",
-        "admin": true
+        "accessFlag": 3
     },
     "drawstart": {
         "name": "drawstart",
-        "admin": true
+        "accessFlag": 3
     }
 }
   ```

@@ -10,20 +10,20 @@
         "notify": true,
         "vote": {
             "name": "vote",
-            "admin": true
+            "accessFlag": 3
         },
         "draw": {
             "name": "draw",
             "winnerMessage": "Ты победил в розыгрыше!",
-            "admin": false
+            "accessFlag": 3
         },
         "drawstop": {
             "name": "drawstop",
-            "admin": true
+            "accessFlag": 3
         },
         "drawstart": {
             "name": "drawstart",
-            "admin": true
+            "accessFlag": 3
         }
     },
     "ngrok": {

@@ -53,6 +53,7 @@ export interface Command {
     name: string;
     admin: boolean;
     winnerMessage: string | undefined;
+    accessFlag: number;
 }
 
 export interface Twitch {
