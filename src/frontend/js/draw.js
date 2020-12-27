@@ -5,7 +5,7 @@ let timerCountdown, isWaitsForWinner;
 
 const timerApi = setInterval(() => {
     request("/api/draw", drawCallback);
-}, 5000);
+}, 1000);
 
 function drawCallback(httpRequest) {
     if (httpRequest.readyState == 4) {

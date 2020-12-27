@@ -34,6 +34,9 @@
         "authtoken": "",
         "region": ""
     },
+    "sshForward": {
+        "enable": false
+    },
     "debug": {
         "twitch": false,
         "fakeUsers": false

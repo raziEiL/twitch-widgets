@@ -33,6 +33,7 @@ export interface Config {
     twitch: Twitch;
     commands: Commands;
     ngrok: NgrokConfig;
+    sshForward: SshConfig;
 }
 
 export interface Debug {
@@ -61,6 +62,10 @@ export interface Twitch {
     login: string;
     httpPort: number;
     ircPort: number;
+}
+
+export interface SshConfig {
+    enable: boolean;
 }
 
 // ngrok

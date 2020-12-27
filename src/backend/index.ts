@@ -1,7 +1,6 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import ngrok from "@raz1el/ngrok";
 
 process.on("uncaughtException", (err) => {
     fs.writeFileSync("crash.log", err.message);
@@ -70,12 +69,18 @@ app.listen(config.twitch.httpPort, () => {
 });
 /*
 |==========================================================================
-| NGROK
+| SHARE LOCALHOST ENVIRONMENT
 |==========================================================================
 */
+import ngrok from "@raz1el/ngrok";
+import { processSsh } from "./src/ssh";
+
 if (config.ngrok.enable) {
     config.ngrok.addr = config.twitch.httpPort;
     ngrok.connect(config.ngrok).then(url => { log("Public web server URL: " + url) }).catch(logError);
 }
+else if (config.sshForward) 
+    processSsh();
 else
     log("Public web server URL: disabled");
+
