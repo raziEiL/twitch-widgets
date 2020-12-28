@@ -11,7 +11,7 @@ const CONNECTED_MESSAGE = "tunneled with tls termination";
 
 export function processSsh() {
     if (!fs.existsSync(SSH_KEY_PATH)) {
-        const workerProcess = child_process.exec("ssh-keygen -t rsa -b 4096 -N \"\" -f " + SSH_KEY_PATH, (error, stdout, stderr) => {
+        const workerProcess = child_process.exec(`ssh-keygen -t rsa -b 4096 -N "" -f "${SSH_KEY_PATH}"`, (error, stdout, stderr) => {
             if (error) {
                 logError(error.stack);
                 logError("Error code: " + error.code);
@@ -29,7 +29,7 @@ export function processSsh() {
 }
 
 export function ssh() {
-    const workerProcess = child_process.exec(`ssh -R 80:localhost:${config.twitch.httpPort} ssh.localhost.run -tt -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=no`, (error, stdout, stderr) => {
+    const workerProcess = child_process.exec(`ssh -R 80:localhost:${config.twitch.httpPort} ssh.localhost.run -tt -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no`, (error, stdout, stderr) => {
         if (error) {
             logError(error.stack);
             logError("Error code: " + error.code);
