@@ -93,6 +93,6 @@ function completeDrawing(winner) {
 
     setTimeout(() => {
         document.querySelector(".draw").classList.add("hidden");
-        document.querySelector(".winner").classList.remove(["hidden", "opacity-none"]);
+        document.querySelector(".winner").classList.remove("hidden", "opacity-none");
     }, 1500);
 }

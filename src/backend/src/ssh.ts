@@ -44,8 +44,8 @@ export function ssh() {
             const connected = (chunk as string).includes(CONNECTED_MESSAGE);
 
             if (connected) {
-                const message = (chunk as string).replace(CONNECTED_MESSAGE, "").trim();
-                log("Public web server URL: " + message);
+                const message = (chunk as string).split(",").pop();
+                log("Public web server URL: " + (message ? message.trim() : chunk));
             }
         });
 }
