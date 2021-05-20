@@ -9,8 +9,7 @@ const cssvariables = require("postcss-css-variables");
 const calc = require("postcss-calc");
 const sourcemaps = require("gulp-sourcemaps"); // указывает src файл js/css для инспектора браузров
 const concat = require("gulp-concat");
-const rename = require("gulp-rename");
-const uncss = require("gulp-uncss"); // убирает неиспользуемые css классы
+const uncss = require("@raz1el/uncss").postcssPlugin; // убирает неиспользуемые css классы
 // minify js/css
 const uglify = require("gulp-uglify-es").default; // сжатие js es6 кода
 const cleanCSS = require("gulp-clean-css"); // сжатие CSS кода
@@ -22,207 +21,224 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const merge = require("merge-stream");
 // Helpers
-const { getFilesList } = require("@raz1el/util");
 const path = require("path");
-// Список css классов (используются для js), которые игнорируются uncss
-const UNCSS_IGNORE = [".hidden"];
+const fs = require("fs");
+const glob = require("glob-promise");
+// config
+const cfg = JSON.parse(require("fs").readFileSync("./package.json", { encoding: "utf8" }));
 
-// Пути
-const ROOT = "./";
-const DIST = "dist/frontend/";
-const SRC = "src/frontend/";
-
-const PATH = {
-    // готовые файлы после сборки
-    build: {
-        css: ROOT + DIST + "css",
-        js: ROOT + DIST + "js",
-        img: ROOT + DIST + "img",
-        font: ROOT + DIST + "font",
-    },
-    // пути исходных файлов
-    src: {
-        css: ROOT + SRC + "scss/",
-        js: ROOT + SRC + "js/",
-        img: ROOT + SRC + "img/*",
-        font: ROOT + SRC + "font/*",
-        html: ROOT + SRC + "*.html"
-    }
-};
-// \ Пути
-
-const SASS_COMPILE_TYPE = {
-    MULTIPLE_OUT_FILES: 0, // Файлы считываются только в root директории scss. На выходе получается несколько файлов стилей
-    MERGE_FILES: 1 // Файлы считываются рекурсивно в root директории scss. На выходе получается один файл стилей
-};
-
-gulp.task("build-dev:sass", () => {
-    return sassBuild(false, SASS_COMPILE_TYPE.MULTIPLE_OUT_FILES);
+gulp.task("build:css", () => {
+    return cssBuild(true);
 });
 
-gulp.task("build:sass", () => {
-    return sassBuild(true, SASS_COMPILE_TYPE.MULTIPLE_OUT_FILES);
+gulp.task("build-dev:css", () => {
+    return cssBuild(false);
 });
-/* 
-gulp.task("build-dev:js", jsCallback);
 
 gulp.task("build:js", () => {
-    return jsCallback({production: true});
-}); */
-
-gulp.task("build:js", jsBrowserify);
+    return jsBuild(true);
+});
 
 gulp.task("build:img", () => {
-    return gulp.src(PATH.src.img)
+    return gulp.src(cfg.gulp.src.img + "/*")
         .pipe(imagemin({
             verbose: true
         }))
-        .pipe(gulp.dest(PATH.build.img));
+        .pipe(gulp.dest(cfg.gulp.build.img));
 });
 
 gulp.task("build:font", () => {
-    return gulp.src(PATH.src.font)
-        .pipe(gulp.dest(PATH.build.font));
+    return gulp.src(cfg.gulp.src.font + "/*")
+        .pipe(gulp.dest(cfg.gulp.build.font));
 });
 
 gulp.task("build:html", () => {
-    return gulp.src(PATH.src.html)
+    return gulp.src(cfg.gulp.src.html + "/*.html")
         .pipe(htmlmin({
             collapseWhitespace: true,
             removeComments: true,
         }))
-        .pipe(gulp.dest(DIST));
+        .pipe(gulp.dest(cfg.gulp.build.html));
 });
 
 gulp.task("clean", () => {
-    return del([ROOT + DIST]);
+    return del([cfg.gulp.build.root]);
 });
 
-gulp.task("build", gulp.series(["clean", "build:sass", "build:js", "build:img", "build:html", "build:font"]));
-gulp.task("build-dev", gulp.series(["clean", "build-dev:sass", "build:js", "build:img", "build:html", "build:font"]));
+gulp.task("build", gulp.series(["clean", "build:css", "build:js", "build:img", "build:html", "build:font"]));
+gulp.task("build-dev", gulp.series(["clean", "build-dev:css", "build:js", "build:img", "build:html", "build:font"]));
 
 gulp.task("browserSync", gulp.series((done) => {
     browserSync.init({
         watch: true,
-        server: ROOT + DIST
+        server: cfg.gulp.build.root
         // notify: false
     });
     done();
 }));
 
 gulp.task("watch", gulp.series(["build", "browserSync"], () => {
-    gulp.watch(PATH.src.css, gulp.series(["build:sass"]));
-    gulp.watch(PATH.src.js, gulp.series(["build:js"]));
-    gulp.watch(PATH.src.img, gulp.series(["build:img"]));
-    gulp.watch(PATH.src.html, gulp.series(["build:html"]));
-    gulp.watch(PATH.src.html, gulp.series(["build:font"]));
+    gulp.watch(cfg.gulp.src.css, gulp.series(["build:css"]));
+    gulp.watch(cfg.gulp.src.js, gulp.series(["build:js"]));
+    gulp.watch(cfg.gulp.src.img, gulp.series(["build:img"]));
+    gulp.watch(cfg.gulp.src.html, gulp.series(["build:html"]));
+    gulp.watch(cfg.gulp.src.html, gulp.series(["build:font"]));
 }));
 
 gulp.task("watch-dev", gulp.series(["build-dev", "browserSync"], () => {
-    gulp.watch(PATH.src.css, gulp.series(["build-dev:sass"]));
-    gulp.watch(PATH.src.js, gulp.series(["build:js"]));
-    gulp.watch(PATH.src.img, gulp.series(["build:img"]));
-    gulp.watch(PATH.src.html, gulp.series(["build:html"]));
-    gulp.watch(PATH.src.html, gulp.series(["build:font"]));
+    gulp.watch(cfg.gulp.src.css, gulp.series(["build-dev:css"]));
+    gulp.watch(cfg.gulp.src.js, gulp.series(["build:js"]));
+    gulp.watch(cfg.gulp.src.img, gulp.series(["build:img"]));
+    gulp.watch(cfg.gulp.src.html, gulp.series(["build:html"]));
+    gulp.watch(cfg.gulp.src.html, gulp.series(["build:font"]));
 }));
 
-function sassBuild(production, sassCompileType) {
-    switch (sassCompileType) {
-        case SASS_COMPILE_TYPE.MULTIPLE_OUT_FILES: {
-            return merge(getFilesList(PATH.src.css)
-                .map(file => {
-                    return sassCallback({
-                        srcPath: file,
-                        outPath: PATH.build.css,
-                        outFileName: path.basename(file).replace(/(.scss|.css)$/, "") + ".min.css",
-                        htmlPath: PATH.src.html,
-                        production
-                    });
-                }));
-        }
-        case SASS_COMPILE_TYPE.MERGE_FILES: {
-            return sassCallback({
-                srcPath: PATH.src.css + "**/*.scss",
-                outPath: PATH.build.css,
-                outFileName: "style.min.css",
-                htmlPath: PATH.src.html,
-                production
+function cssBuild(production) {
+    let uncssIgnore;
+    if (cfg.gulp.css.uncss.enable) {
+        uncssIgnore = getJsSelectors();
+        console.log("Uncss ignore", uncssIgnore);
+    }
+    const src = cfg.gulp.src.css + (cfg.gulp.css.sass.enable ? "**/*.{scss,css}" : "**/*.css");
+    // Файлы считываются рекурсивно в root директории scss. На выходе получается один файл стилей
+    if (cfg.gulp.css.merge) {
+        return cssCallback({
+            src,
+            name: cfg.gulp.css.mergeName,
+            production,
+            uncssIgnore
+        });
+    }
+    else { // Файлы считываются только в root директории scss. На выходе получается несколько файлов стилей
+        const files = glob.sync(src);
+        return merge(files.map(file => {
+            return cssCallback({
+                src: file,
+                name: path.basename(file).replace(cfg.gulp.css.sass.enable ? /(.scss|.css)$/ : /.css$/, ""),
+                production,
+                uncssIgnore
             });
-        }
+        }));
     }
 }
 
-function sassCallback(config) {
-    if (config.production) {
-        return gulp.src(config.srcPath)
-            .pipe(sass({}).on("error", sass.logError))
-            .pipe(postcss([autoprefixer(), cssvariables({
-                preserve: true
-            }), calc()]))
-            .pipe(concat(config.outFileName))
-            .pipe(uncss({
-                html: [config.htmlPath],
-                ignore: UNCSS_IGNORE
-            }))
-            .pipe(cleanCSS())
-            .pipe(gulp.dest(config.outPath));
+function cssCallback(config) {
+    let stream = gulp.src(config.src).pipe(concat(config.name + (cfg.gulp.css.clean.enable ? ".min.css" : ".css")));
+
+    if (cfg.gulp.css.sass.enable) {
+        if (config.production)
+            stream = stream.pipe(sass(cfg.gulp.css.sass.opts).on("error", sass.logError));
+        else
+            stream = stream.pipe(sass({
+                outputStyle: "expanded"
+            }).on("error", sass.logError));
     }
-    return gulp.src(config.srcPath)
-        .pipe(sourcemaps.init())
-        .pipe(sass({
-            outputStyle: "expanded"
-        }).on("error", sass.logError))
-        .pipe(postcss([autoprefixer(), cssvariables({
-            preserve: true
-        }), calc()]))
-        .pipe(concat(config.outFileName))
-        .pipe(uncss({
-            html: [config.htmlPath],
-            ignore: UNCSS_IGNORE
-        }))
-        .pipe(gulp.dest(config.outPath))
-        .pipe(rename((path) => {
-            path.basename += ".min";
-        }))
-        .pipe(cleanCSS())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest(config.outPath));
+
+    if (cfg.gulp.css.sourcemaps)
+        stream = stream.pipe(sourcemaps.init());
+
+    const plugins = [];
+
+    if (cfg.gulp.css.uncss.enable)
+        plugins.push(uncss({
+            html: [cfg.gulp.src.html + "/*.html"],
+            ignore: config.uncssIgnore,
+            ignoreJs: []
+        }));
+
+    if (cfg.gulp.css.autoprefixer.enable)
+        plugins.push(autoprefixer(cfg.gulp.css.cssvariables.opts));
+
+    if (cfg.gulp.css.cssvariables.enable)
+        plugins.push(cssvariables(cfg.gulp.css.cssvariables.opts));
+
+    if (cfg.gulp.css.calc.enable)
+        plugins.push(calc(cfg.gulp.css.calc.opts));
+
+    stream = stream.pipe(postcss(plugins));
+
+    if (cfg.gulp.css.clean.enable)
+        stream = stream.pipe(cleanCSS());
+
+    if (cfg.gulp.css.sourcemaps)
+        stream = stream.pipe(sourcemaps.write("./maps"));
+
+    return stream.pipe(gulp.dest(cfg.gulp.build.css));
 }
-/* 
-function jsCallback(production) {
-    if (production) {
-        return gulp.src(PATH.src.js + "**//*js")
-.pipe(concat("scripts.min.js"))
-.pipe(uglify())
-.pipe(gulp.dest(PATH.build.js));
-}
-return gulp.src(PATH.src.js)
-.pipe(sourcemaps.init({ loadMaps: true }))
-.pipe(concat("scripts.js"))
-.pipe(gulp.dest(PATH.build.js))
-.pipe(rename(function (path) {
-path.basename += ".min";
-}))
-.pipe(uglify())
-.pipe(sourcemaps.write("./"))
-.pipe(gulp.dest(PATH.build.js));
-}
-*/
-// https://stackoverflow.com/questions/41043032/browserify-parseerror-import-and-export-may-appear-only-with-sourcetype
-function jsBrowserify() {
-    return merge(getFilesList(PATH.src.js)
-        .map(file => {
-            return browserify({
+
+// TODO: make browserify as config option
+function jsBuild() {
+    if (cfg.gulp.js.merge) {
+        let stream = gulp.src(cfg.gulp.src.js + "**//*.js").pipe(concat(cfg.gulp.js.mergeName + (cfg.gulp.js.uglify.enable ? ".min.js" : ".js")));
+
+        if (cfg.gulp.js.sourcemaps)
+            stream = stream.pipe(sourcemaps.init({ loadMaps: true }));
+
+        if (cfg.gulp.js.uglify.enable)
+            stream = stream.pipe(uglify(cfg.gulp.js.uglify.opts));
+
+        if (cfg.gulp.js.sourcemaps)
+            stream = stream.pipe(sourcemaps.write("./maps"));
+
+        return stream.pipe(gulp.dest(cfg.gulp.build.js));
+    }
+    else {
+        // https://stackoverflow.com/questions/41043032/browserify-parseerror-import-and-export-may-appear-only-with-sourcetype
+        const files = glob.sync(cfg.gulp.src.js + "**//*.js");
+        return merge(files.map(file => {
+            // /\.min\./.test(file) ? path.basename(file) : 
+            let stream = browserify({
                 entries: [file],
                 debug: true
             }).bundle()
-                .pipe(source(path.basename(file).replace(/(.js)$/, "") + ".min.js"))
-                .pipe(buffer())
-                .pipe(sourcemaps.init({ loadMaps: true }))
-                // Add transformation tasks to the pipeline here.
-                .pipe(uglify())
-                .on("error", console.error)
-                .pipe(sourcemaps.write("./"))
-                .pipe(gulp.dest(PATH.build.js));
+                .pipe(source(path.basename(file).replace(/(.js)$/, "") + (cfg.gulp.js.uglify.enable ? ".min.js" : ".js")))
+                .pipe(buffer());
+
+            if (cfg.gulp.js.sourcemaps)
+                stream = stream.pipe(sourcemaps.init({ loadMaps: true }));
+
+            if (cfg.gulp.js.uglify.enable)
+                stream = stream.pipe(uglify(cfg.gulp.js.uglify.opts));
+
+            if (cfg.gulp.js.sourcemaps)
+                stream = stream.pipe(sourcemaps.write("./maps"));
+
+            return stream.pipe(gulp.dest(cfg.gulp.build.js));
         }));
+    }
+}
+
+// uncss
+function getJsSelectors() {
+    const selectors = [];
+    const files = glob.sync(cfg.gulp.src.js + "**/*.js");
+    // eslint-disable-next-line unicorn/no-array-for-each
+    files.forEach(f => {
+        console.log(f);
+        if (!/.js$/.test(f)) return;
+        const script = fs.readFileSync(f, "utf8");
+        const regexClass = script.match(/classList\.add\((["'].*["'])/gm);
+
+        if (regexClass) {
+            for (const str of regexClass) {
+                const match = str.match(/classList\.add\((["'].*["'])/);
+
+                if (match && match[1])
+                    selectors.push(...match[1].replace(/["']+/g, "").split(",").map(s => "." + s.trim()));
+            }
+        }
+        const regexElem = script.match(/createElement\((["'].*["'])/gm);
+
+        if (regexElem) {
+            for (const str of regexElem) {
+                const match = str.match(/createElement\((["'].*["'])/);
+
+                if (match && match[1])
+                    selectors.push(match[1].replace(/["']+/g, ""));
+            }
+        }
+    });
+    if (cfg.gulp.css.uncss.enable)
+        selectors.push(...cfg.gulp.css.uncss.opts.ignore);
+    return [...new Set(selectors)];
 }

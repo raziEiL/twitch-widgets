@@ -34,6 +34,7 @@ export interface Config {
     commands: Commands;
     ngrok: NgrokConfig;
     sshForward: SshConfig;
+    websocket: WebSocket;
 }
 
 export interface Debug {
@@ -66,6 +67,13 @@ export interface Twitch {
 
 export interface SshConfig {
     enable: boolean;
+}
+
+export interface WebSocket {
+    port: number;
+    recordStream: boolean;
+    secret: string;
+    allowMultistream: boolean;
 }
 
 // ngrok

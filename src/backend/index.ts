@@ -8,6 +8,7 @@ process.on("uncaughtException", (err) => {
 
 import { log, logError } from "./src/helpers";
 import { vote, voteList, draw, say } from "./src/twitch";
+import * as ws from "./src/websocket";
 import { config } from "./src/pkg-config";
 /*
 |==========================================================================
@@ -18,6 +19,15 @@ const app = express();
 const PATH = path.join(__dirname, "..", "frontend");
 
 app.use(express.static(PATH));
+
+app.all("/stream", (req, res) => {
+    ws.processMpegTs(req as ws.RequestExtend, res);
+});
+
+app.get("/stream/list", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.json(ws.getPorts());
+});
 
 app.get("/vote/list", (req, res) => {
     if (vote) {
@@ -79,7 +89,7 @@ if (config.ngrok.enable) {
     config.ngrok.addr = config.twitch.httpPort;
     ngrok.connect(config.ngrok).then(url => { log("Public web server URL: " + url) }).catch(logError);
 }
-else if (config.sshForward) 
+else if (config.sshForward)
     processSsh();
 else
     log("Public web server URL: disabled");
