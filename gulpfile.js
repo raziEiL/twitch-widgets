@@ -77,6 +77,14 @@ gulp.task("browserSync", gulp.series((done) => {
     done();
 }));
 
+gulp.task("watch-nosync", gulp.series(["build"], () => {
+    gulp.watch(cfg.gulp.src.css, gulp.series(["build:css"]));
+    gulp.watch(cfg.gulp.src.js, gulp.series(["build:js"]));
+    gulp.watch(cfg.gulp.src.img, gulp.series(["build:img"]));
+    gulp.watch(cfg.gulp.src.html, gulp.series(["build:html"]));
+    gulp.watch(cfg.gulp.src.html, gulp.series(["build:font"]));
+}));
+
 gulp.task("watch", gulp.series(["build", "browserSync"], () => {
     gulp.watch(cfg.gulp.src.css, gulp.series(["build:css"]));
     gulp.watch(cfg.gulp.src.js, gulp.series(["build:js"]));
@@ -99,7 +107,7 @@ function cssBuild(production) {
         uncssIgnore = getJsSelectors();
         console.log("Uncss ignore", uncssIgnore);
     }
-    const src = cfg.gulp.src.css + (cfg.gulp.css.sass.enable ? "**/*.{scss,css}" : "**/*.css");
+    const src = cfg.gulp.src.css + (cfg.gulp.css.sass.enable ? "/*.{scss,css}" : "/*.css");
     // Файлы считываются рекурсивно в root директории scss. На выходе получается один файл стилей
     if (cfg.gulp.css.merge) {
         return cssCallback({
@@ -169,7 +177,7 @@ function cssCallback(config) {
 // TODO: make browserify as config option
 function jsBuild() {
     if (cfg.gulp.js.merge) {
-        let stream = gulp.src(cfg.gulp.src.js + "**//*.js").pipe(concat(cfg.gulp.js.mergeName + (cfg.gulp.js.uglify.enable ? ".min.js" : ".js")));
+        let stream = gulp.src(cfg.gulp.src.js + "/*.js").pipe(concat(cfg.gulp.js.mergeName + (cfg.gulp.js.uglify.enable ? ".min.js" : ".js")));
 
         if (cfg.gulp.js.sourcemaps)
             stream = stream.pipe(sourcemaps.init({ loadMaps: true }));
@@ -184,7 +192,7 @@ function jsBuild() {
     }
     else {
         // https://stackoverflow.com/questions/41043032/browserify-parseerror-import-and-export-may-appear-only-with-sourcetype
-        const files = glob.sync(cfg.gulp.src.js + "**//*.js");
+        const files = glob.sync(cfg.gulp.src.js + "/*.js");
         return merge(files.map(file => {
             // /\.min\./.test(file) ? path.basename(file) : 
             let stream = browserify({
@@ -211,27 +219,27 @@ function jsBuild() {
 // uncss
 function getJsSelectors() {
     const selectors = [];
-    const files = glob.sync(cfg.gulp.src.js + "**/*.js");
+    const files = glob.sync(cfg.gulp.src.js + "/**/*.js");
     // eslint-disable-next-line unicorn/no-array-for-each
     files.forEach(f => {
-        console.log(f);
-        if (!/.js$/.test(f)) return;
+        /*         console.log(f);
+                if (!/.js$/.test(f)) return; */
         const script = fs.readFileSync(f, "utf8");
-        const regexClass = script.match(/classList\.add\((["'].*["'])/gm);
+        const regexClass = script.match(/classList\.add\((["'][a-z]*["'])\)/gm);
 
         if (regexClass) {
             for (const str of regexClass) {
-                const match = str.match(/classList\.add\((["'].*["'])/);
+                const match = str.match(/classList\.add\((["'][a-z]*["'])\)/);
 
                 if (match && match[1])
                     selectors.push(...match[1].replace(/["']+/g, "").split(",").map(s => "." + s.trim()));
             }
         }
-        const regexElem = script.match(/createElement\((["'].*["'])/gm);
+        const regexElem = script.match(/createElement\((["'][a-z]*["'])\)/gm);
 
         if (regexElem) {
             for (const str of regexElem) {
-                const match = str.match(/createElement\((["'].*["'])/);
+                const match = str.match(/createElement\((["'][a-z]*["'])\)/);
 
                 if (match && match[1])
                     selectors.push(match[1].replace(/["']+/g, ""));

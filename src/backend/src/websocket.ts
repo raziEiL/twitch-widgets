@@ -36,39 +36,39 @@ function createSocket(address: string) {
     const port = socketNextPort++;
     clientAddress.add(address);
     socketPort.add(port);
-    log("Create WebSocket and awaiting connections on ws://127.0.0.1:" + socketNextPort + "/");
+    log("Create WebSocket and awaiting connections on ws://127.0.0.1:" + port + "/");
 
-    const socketServer = new WebSocket.Server({ port, perMessageDeflate: false }) as ServerExtend;
-    socketServer.connectionCount = 0;
+    const webSocket = new WebSocket.Server({ port, perMessageDeflate: false, noServer: true }) as ServerExtend;
+    webSocket.connectionCount = 0;
 
-    socketServer.on("connection", (socket, upgradeReq) => {
-        socketServer.connectionCount++;
-        log("New WebSocket Client Connection: " + upgradeReq.socket.remoteAddress + upgradeReq.socket.remotePort + ` (${socketServer.connectionCount} total)`);
+    webSocket.on("connection", (socket, upgradeReq) => {
+        webSocket.connectionCount++;
+        log("New WebSocket Client Connection: " + upgradeReq.socket.remoteAddress + upgradeReq.socket.remotePort + ` (${webSocket.connectionCount} total)`);
 
         socket.on("close", () => {
-            socketServer.connectionCount--;
-            log("Client Disconnected WebSocket: " + upgradeReq.socket.remoteAddress + upgradeReq.socket.remotePort + ` (${socketServer.connectionCount} total)`);
+            webSocket.connectionCount--;
+            log("Client Disconnected WebSocket: " + upgradeReq.socket.remoteAddress + upgradeReq.socket.remotePort + ` (${webSocket.connectionCount} total)`);
         });
     });
 
-    socketServer.on("close", () => {
+    webSocket.on("close", () => {
         socketPort.delete(port);
         clientAddress.delete(address);
         log(`Close WebSocket (port: ${port})`);
     });
 
-    socketServer.on("error", (error) => {
+    webSocket.on("error", (error) => {
         logError(error.message);
     });
 
-    socketServer.broadcast = (data: any) => {
-        for (const client of socketServer.clients) {
+    webSocket.broadcast = (data: any) => {
+        for (const client of webSocket.clients) {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(data);
             }
         }
     };
-    return socketServer;
+    return webSocket;
 }
 
 // HTTP Server to accept incomming MPEG-TS Stream from ffmpeg

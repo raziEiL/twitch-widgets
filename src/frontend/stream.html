@@ -11,7 +11,7 @@
 
 <body class="anim-fade-in hidden">
     <section class="container">
-        <!--     <div class="cam" id="video">1</div> -->
+        <div class="cam" id="video">1</div>
         <!--         <div class="cam" id="video-0"></div>
         <div class="cam" id="video-1"></div>
         <div class="cam" id="video-2"></div>
@@ -29,10 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.2/lib/draggable.js"></script>
     <script>
         const sortable = new window.Draggable.Sortable(document.querySelectorAll('.container'), {
-            draggable: '.cam',
-            classes: {
-                'draggable:over': ['draggable--over'],
-            },
+            draggable: '.cam'
         });
     </script>
 </body>

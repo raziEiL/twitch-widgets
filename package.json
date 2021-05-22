@@ -13,6 +13,7 @@
         "build-end": "rm -rf dist/backend && tsc",
         "build-pkg": "rm -rf pkg-release && pkg package.json --out-path pkg-release && copy /y config.json pkg-release",
         "watch-front": "gulp watch",
+        "watch-front-nosync": "gulp watch-nosync",
         "watch-end": "nodemon",
         "test": "jest --detectOpenHandles",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern src/**/*.spec.ts"
@@ -63,8 +64,11 @@
                 "enable": true,
                 "opts": {
                     "ignore": [
-                        "canvas",
-                        ".draggable--over"
+                        ".draggable--over",
+                        ".draggable--original",
+                        ".draggable-source--placed ",
+                        ".draggable-container--placed",
+                        ".draggable-container--is-dragging"
                     ]
                 }
             },

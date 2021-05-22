@@ -21,6 +21,7 @@ const PATH = path.join(__dirname, "..", "frontend");
 app.use(express.static(PATH));
 
 app.all("/stream", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     ws.processMpegTs(req as ws.RequestExtend, res);
 });
 

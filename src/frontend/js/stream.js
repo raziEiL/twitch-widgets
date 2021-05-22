@@ -6,6 +6,8 @@ setInterval(() => {
     request("/stream/list", streamCallback);
 }, 1000);
 
+const isLocalehost = () => document.location.hostname.includes("localhost") && document.location.hostname.length === 9;
+
 function streamCallback(httpRequest) {
     if (httpRequest.readyState != 4) return;
 
@@ -24,7 +26,7 @@ function streamCallback(httpRequest) {
             div.classList.add("cam");
             container.append(div);
 
-            const jsMpeg = new JSMpeg.VideoElement(div, "ws://" + document.location.hostname + `:${port}/`, {
+            const jsMpeg = new JSMpeg.VideoElement(div, (isLocalehost() ? "ws://" : "wws://") + document.location.hostname + `:${port}/`, {
                 control: false,
                 autoplay: true,
             });
