@@ -38,9 +38,7 @@
         "enable": false
     },
     "websocket": {
-        "port": 8081,
         "secret": "supersecret",
-        "recordStream": false,
         "allowMultistream": true
     },
     "debug": {

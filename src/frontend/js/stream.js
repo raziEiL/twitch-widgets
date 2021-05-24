@@ -1,60 +1,99 @@
-const request = require("./incude/request");
-const JSMpeg = require("./incude/jsmpeg-player.umd.min.js");
-const ports = new Map();
 
-setInterval(() => {
-    request("/stream/list", streamCallback);
-}, 1000);
+const JSMpeg = require("./incude/jsmpeg-player.umd.min");
+const bf = require("../../../dist/backend/src/buffer-helpers");
+const jsMpegs = new Map();
 
 const isLocalehost = () => document.location.hostname.includes("localhost") && document.location.hostname.length === 9;
+const container = document.querySelector(".container");
+createSocket();
 
-function streamCallback(httpRequest) {
-    if (httpRequest.readyState != 4) return;
+function createSocket() {
+    const socket = new WebSocket((isLocalehost() ? "ws://" : "wss://") + document.location.hostname);
+    socket.binaryType = "arraybuffer";
 
-    if (httpRequest.status == 200) {
-        const data = JSON.parse(httpRequest.responseText);
-        /*  console.log(data); */
+    socket.addEventListener("open", () => {
+        console.log("socket open");
+        /*     for (const [jsMpeg] of jsMpegs.entries()) {
+                jsMpeg.player.source.onOpen();
+            } */
+    });
 
-        const container = document.querySelector(".container");
+    //socket.addEventListener("error", onClosed);
+    socket.addEventListener("close", onClosed);
 
-        // create player
-        for (const port of data.ports) {
-            if (ports.has(port)) continue;
-
-            const div = document.createElement("div");
-            div.dataset.port = port;
-            div.classList.add("cam");
-            container.append(div);
-
-            const jsMpeg = new JSMpeg.VideoElement(div, (isLocalehost() ? "ws://" : "wws://") + document.location.hostname + `:${port}/`, {
-                control: false,
-                autoplay: true,
-            });
-            ports.set(port, jsMpeg);
-            console.log("Create JsMpeg player port =", port);
+    function onClosed() {
+        for (const [jsMpeg] of jsMpegs.entries()) {
+            try {
+                jsMpeg.stop();
+                jsMpeg.destroy();
+            } catch { }
         }
+        jsMpegs.clear();
+        const divs = document.querySelectorAll("div");
 
-        // destroy player
-        const keys = ports.keys();
+        for (const div of divs)
+            div.remove();
 
-        for (const key of keys) {
-            if (!data.ports.includes(key)) {
-                try {
-                    ports.get(key).stop();
-                } catch { }
-                const divs = document.querySelectorAll("div");
+        console.log("socket closed");
+        setTimeout(createSocket, 5000);
+    }
 
-                for (const div of divs) {
-                    if (div.dataset.port == key) {
-                        div.remove();
-                        console.log("Destroy JsMpeg player port =", key);
-                        break;
+    socket.addEventListener("message", (ev) => {
+        if (!ev.data) return;
+
+        const obj = bf.unpackBuffer(ev.data);
+
+        switch (obj.packType) {
+            case bf.PackType.Mpegts: {
+                // create player
+                if (!jsMpegs.has(obj.data)) {
+                    const div = document.createElement("div");
+                    div.dataset.index = obj.data;
+                    div.classList.add("cam");
+                    container.append(div);
+
+                    const jsMpeg = new JSMpeg.VideoElement(div, (isLocalehost() ? "ws://" : "wss://") + document.location.hostname, {
+                        control: false,
+                        autoplay: true,
+                    });
+
+                    jsMpegs.set(obj.data, jsMpeg);
+
+                    if (obj.concatBuffer)
+                        jsMpeg.player.source.onMessage(obj.concatBuffer);
+
+                    console.log("Create JsMpeg player index =", obj.data);
+                }
+                else {
+                    const jsMpeg = jsMpegs.get(obj.data);
+
+                    if (jsMpeg)
+                        jsMpeg.player.source.onMessage(obj.concatBuffer);
+                }
+                break;
+            }
+            case bf.PackType.Event: {
+                if (obj.type == bf.EventType.Close) {
+                    const jsMpeg = jsMpegs.get(obj.data);
+                    jsMpegs.delete(obj.data);
+
+                    try {
+                        jsMpeg.stop();
+                        jsMpeg.destroy();
+                    } catch { }
+
+                    const divs = document.querySelectorAll("div");
+
+                    for (const div of divs) {
+                        if (div.dataset.index == obj.data) {
+                            div.remove();
+                            console.log("Destroy JsMpeg player index =", obj.data);
+                            break;
+                        }
                     }
                 }
+                break;
             }
         }
-    }
-    else {
-        console.log("С запросом возникла проблема. status: " + httpRequest.status);
-    }
+    });
 }

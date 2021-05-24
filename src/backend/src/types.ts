@@ -70,8 +70,6 @@ export interface SshConfig {
 }
 
 export interface WebSocket {
-    port: number;
-    recordStream: boolean;
     secret: string;
     allowMultistream: boolean;
 }

@@ -1,6 +1,7 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
+import { createServer } from "http";
 
 process.on("uncaughtException", (err) => {
     fs.writeFileSync("crash.log", err.message);
@@ -16,19 +17,21 @@ import { config } from "./src/pkg-config";
 |==========================================================================
 */
 const app = express();
+const http = createServer(app);
+const socket = ws.createSocket(http);
 const PATH = path.join(__dirname, "..", "frontend");
 
 app.use(express.static(PATH));
 
 app.all("/stream", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    ws.processMpegTs(req as ws.RequestExtend, res);
+    socket.processMpegTs(req as ws.RequestExtend, res);
 });
 
-app.get("/stream/list", (req, res) => {
+/* app.get("/stream/list", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.json(ws.getPorts());
-});
+}); */
 
 app.get("/vote/list", (req, res) => {
     if (vote) {
@@ -75,7 +78,7 @@ app.get("/api/draw/winner", (req, res) => {
         res.status(503).send("The prize drawing is not started yet!");
 });
 
-app.listen(config.twitch.httpPort, () => {
+http.listen(config.twitch.httpPort, () => {
     log(`Local web server URL: http://localhost:${config.twitch.httpPort}`);
 });
 /*

@@ -220,11 +220,9 @@ function jsBuild() {
 function getJsSelectors() {
     const selectors = [];
     const files = glob.sync(cfg.gulp.src.js + "/**/*.js");
-    // eslint-disable-next-line unicorn/no-array-for-each
-    files.forEach(f => {
-        /*         console.log(f);
-                if (!/.js$/.test(f)) return; */
-        const script = fs.readFileSync(f, "utf8");
+
+    for (const file of files) {
+        const script = fs.readFileSync(file, "utf8");
         const regexClass = script.match(/classList\.add\((["'][a-z]*["'])\)/gm);
 
         if (regexClass) {
@@ -245,7 +243,7 @@ function getJsSelectors() {
                     selectors.push(match[1].replace(/["']+/g, ""));
             }
         }
-    });
+    }
     if (cfg.gulp.css.uncss.enable)
         selectors.push(...cfg.gulp.css.uncss.opts.ignore);
     return [...new Set(selectors)];
