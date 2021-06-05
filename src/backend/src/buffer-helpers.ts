@@ -1,12 +1,7 @@
-/* const PackEvent = 0;
-const PackMpegts = 1; */
-//export const PackType = Object.freeze({ PackEvent, PackMpegts });
 export enum PackType {
     Event,
     Mpegts
 }
-/* const EventClose = 0; */
-//export const EventType = Object.freeze({ EventClose });
 
 export enum EventType {
     Close

@@ -23,15 +23,10 @@ const PATH = path.join(__dirname, "..", "frontend");
 
 app.use(express.static(PATH));
 
-app.all("/stream", (req, res) => {
+app.all("/", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     socket.processMpegTs(req as ws.RequestExtend, res);
 });
-
-/* app.get("/stream/list", (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.json(ws.getPorts());
-}); */
 
 app.get("/vote/list", (req, res) => {
     if (vote) {
