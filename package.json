@@ -1,6 +1,6 @@
 {
     "name": "twitch-widgets",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Provides Twitch chat commands and web-widgets for broadcasters",
     "main": "dist/backend/index.js",
     "scripts": {

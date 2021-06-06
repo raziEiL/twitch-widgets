@@ -88,7 +88,7 @@ if (config.ngrok.enable) {
     config.ngrok.addr = config.twitch.httpPort;
     ngrok.connect(config.ngrok).then(url => { log("Public web server URL: " + url) }).catch(logError);
 }
-else if (config.sshForward)
+else if (config.sshForward.enable)
     processSsh();
 else
     log("Public web server URL: disabled");
