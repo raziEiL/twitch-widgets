@@ -1,4 +1,5 @@
 
+require("./incude/obs");
 const JSMpeg = require("./incude/jsmpeg-player.umd.min");
 const bf = require("../../../dist/backend/src/buffer-helpers");
 const jsMpegs = new Map();
@@ -34,7 +35,7 @@ function createSocket() {
         for (const div of divs)
             div.remove();
 
-        console.log("socket closed");
+        console.log("socket closed! trying to connect in 5s...");
         setTimeout(createSocket, 5000);
     }
 
