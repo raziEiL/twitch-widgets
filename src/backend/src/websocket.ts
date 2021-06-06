@@ -23,7 +23,6 @@ export interface SocketExtend extends Socket {
     recording: fs.WriteStream | undefined;
 }
 
-const MAX_STREAMS = 9; // incldue 0
 const clientAddress = new Set<string>();
 
 export function createSocket(server: Server) {
@@ -32,16 +31,16 @@ export function createSocket(server: Server) {
 
     webSocket.on("connection", (socket, req) => {
         webSocket.connectionCount++;
-        log("New WebSocket Client Connection: " + req.socket.remoteAddress + req.socket.remotePort + ` (${webSocket.connectionCount} total)`);
+        log(`WebSocket client connected: ${req.socket.remoteAddress}${req.socket.remotePort} [${webSocket.connectionCount} total]`);
 
         socket.on("close", () => {
             webSocket.connectionCount--;
-            log("Client Disconnected WebSocket: " + req.socket.remoteAddress + req.socket.remotePort + ` (${webSocket.connectionCount} total)`);
+            log(`WebSocket client disconnected: ${req.socket.remoteAddress}${req.socket.remotePort} [${webSocket.connectionCount} total]`);
         });
     });
 
     webSocket.on("close", () => {
-        log("Close WebSocket");
+        log("WebSocket closed");
     });
 
     webSocket.on("error", (error) => {
@@ -57,41 +56,35 @@ export function createSocket(server: Server) {
     };
     // HTTP Server to accept incomming MPEG-TS Stream from ffmpeg
     webSocket.processMpegTs = (req: RequestExtend, res: Response) => {
-        const address = req.socket.remoteAddress + ":" + req.socket.remotePort;
+        const address = req.socket.remoteAddress + (config.videoChat.allowMultistream ? (":" + req.socket.remotePort) : "");
 
-        if (req.headers.authorization !== config.websocket.secret) {
-            log("Failed Stream Connection: " + address + " - wrong secret.");
+        if (config.videoChat.streamKey && req.headers.authorization != config.videoChat.streamKey) {
+            log(`Broadcaster connection failed! address=${address} [wrong secret "${req.headers.authorization}"]`);
             res.end();
             return;
         }
-        if (!config.websocket.allowMultistream && clientAddress.has(address)) {
-            log(`Multiple Streams not allowed (address: ${address})`);
+        if (!config.videoChat.allowMultistream && clientAddress.has(address)) {
+            log(`Broadcaster multiple streams not allowed! address=${address}`);
             res.end();
             return;
         }
-        if (res.socket)
-            res.socket.setTimeout(0);
+        if (clientAddress.size >= config.videoChat.broadcastersLimit) {
+            log(`Broadcasters limit exceeded! address=${address} [${clientAddress.size}/${config.videoChat.broadcastersLimit}]`);
+            res.end();
+            return;
+        }
 
         clientAddress.add(address);
         const index = [...clientAddress].indexOf(address);
-
-        log(`Stream Connected: ${index} (address: ${address})`);
-
-        if (index === -1 || index > MAX_STREAMS) {
-            log(`Stream limit exceeded! (address: ${address})`);
-            res.end();
-            return;
-        }
-
         const packBf = bf.packBuffer({ packType: bf.PackType.Mpegts, data: index });
+
+        log(`Broadcaster connected: id=${index}, address=${address} [${clientAddress.size}/${config.videoChat.broadcastersLimit}]`);
 
         req.on("data", (data) => {
             webSocket.broadcast(bf.packConcat(packBf, data));
         });
 
         req.on("close", () => {
-            log(`Stream Disconnected: ${index} (address: ${address})`);
-
             webSocket.broadcast(bf.packBuffer({
                 packType: bf.PackType.Event,
                 data: index,
@@ -99,10 +92,9 @@ export function createSocket(server: Server) {
             }));
 
             clientAddress.delete(address);
+            log(`Broadcaster disconnected: id=${index}, address=${address} [${clientAddress.size}/${config.videoChat.broadcastersLimit}]`);
         });
     };
 
     return webSocket;
 }
-
-

@@ -29,15 +29,7 @@ export function processSsh() {
 }
 
 export function ssh() {
-    const workerProcess = child_process.exec(`ssh -R 80:localhost:${config.twitch.httpPort} ssh.localhost.run -tt -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no`, (error, stdout, stderr) => {
-        if (error) {
-            logError(error.stack);
-            logError("Error code: " + error.code);
-            logError("Signal received: " + error.signal);
-        }
-        /*       log("stdout: " + stdout);
-                log("stderr: " + stderr); */
-    });
+    const workerProcess = child_process.exec(`ssh -R 80:localhost:${config.twitch.httpPort} ssh.localhost.run -tt -i "${SSH_KEY_PATH}" -o StrictHostKeyChecking=no`);
     if (workerProcess.stdout)
         workerProcess.stdout.on("data", chunk => {
             if (!chunk) return;
@@ -48,4 +40,11 @@ export function ssh() {
                 log("Public web server URL: " + (message ? message.trim() : chunk));
             }
         });
+    workerProcess.on("close", () => {
+        log("ssh tunnel closed");
+        if (config.sshForward.reconnect > 0) {
+            log(`trying to open ssh tunnel in ${config.sshForward.reconnect}ms`);
+            setTimeout(ssh, config.sshForward.reconnect);
+        }
+    });
 }

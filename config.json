@@ -35,11 +35,13 @@
         "region": ""
     },
     "sshForward": {
-        "enable": false
+        "enable": true,
+        "reconnect": 2000
     },
-    "websocket": {
-        "secret": "supersecret",
-        "allowMultistream": true
+    "videoChat": {
+        "streamKey": "supersecret",
+        "allowMultistream": true,
+        "broadcastersLimit": 10
     },
     "debug": {
         "twitch": false,
