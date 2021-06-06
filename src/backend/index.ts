@@ -24,7 +24,7 @@ const PATH = path.join(__dirname, "..", "frontend");
 app.use(express.static(PATH));
 
 app.all("/", (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    /* res.setHeader("Access-Control-Allow-Origin", "*"); */
     socket.processMpegTs(req as ws.RequestExtend, res);
 });
 
@@ -73,7 +73,7 @@ app.get("/api/draw/winner", (req, res) => {
         res.status(503).send("The prize drawing is not started yet!");
 });
 
-http.listen(config.twitch.httpPort, () => {
+http.listen(process.env.PORT ? process.env.PORT : config.twitch.httpPort, () => {
     log(`Local web server URL: http://localhost:${config.twitch.httpPort}`);
 });
 /*
