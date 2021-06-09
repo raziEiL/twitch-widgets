@@ -36,7 +36,7 @@
     },
     "sshForward": {
         "enable": false,
-        "reconnect": 2000
+        "reconnect": 1000
     },
     "videoChat": {
         "streamKey": "supersecret",

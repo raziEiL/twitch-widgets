@@ -9,3 +9,4 @@ package-lock.json
 pkg-release
 ssh_rsa*
 test
+*.bak
