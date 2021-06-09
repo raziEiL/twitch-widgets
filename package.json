@@ -1,6 +1,6 @@
 {
     "name": "twitch-widgets",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "description": "Provides Twitch chat commands and web-widgets for broadcasters",
     "main": "dist/backend/index.js",
     "scripts": {
@@ -22,6 +22,13 @@
     "pkg": {
         "assets": "dist/frontend/**/*"
     },
+    "keywords": [
+        "twitch",
+        "widget",
+        "stream",
+        "obs",
+        "broadcaster"
+    ],
     "gulp": {
         "src": {
             "root": "./src/frontend",
