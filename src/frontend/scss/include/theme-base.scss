@@ -16,20 +16,31 @@
     background-color: $color-b;
 }
 
+.border-a {
+    border-color: $color-a;
+}
+
+.border-b {
+    border-color: $color-b;
+}
+
 // Svg icons
 .icon {
     fill: $color-icon;
 }
 
 body {
-    font-family: $font;
     color: $color-text;
     background-color: $color-bg;
 }
 
-#theme {
+* {
     font-family: $font;
 }
+
+/* #theme {
+    font-family: $font;
+} */
 
 a {
     color: $color-a;

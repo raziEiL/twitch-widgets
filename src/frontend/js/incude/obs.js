@@ -4,10 +4,10 @@ setTimeout(() => {
 }, 200);
 
 // go back feature
-if (window.location.pathname !== "/") {
+/* if (window.location.pathname !== "/") {
     const body = document.querySelector("body");
     body.addEventListener("dblclick", () => {
-        /*  window.history.back(); */
+        //  window.history.back();
         document.location.replace("http://localhost");
     });
-}
+} */

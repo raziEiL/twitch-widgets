@@ -223,21 +223,21 @@ function getJsSelectors() {
 
     for (const file of files) {
         const script = fs.readFileSync(file, "utf8");
-        const regexClass = script.match(/classList\.add\((["'][a-z]*["'])\)/gm);
+        const regexClass = script.match(/classList\.add\((["'][\w|-]*["'])\)/gm);
 
         if (regexClass) {
             for (const str of regexClass) {
-                const match = str.match(/classList\.add\((["'][a-z]*["'])\)/);
+                const match = str.match(/classList\.add\((["'][\w|-]*["'])\)/);
 
                 if (match && match[1])
                     selectors.push(...match[1].replace(/["']+/g, "").split(",").map(s => "." + s.trim()));
             }
         }
-        const regexElem = script.match(/createElement\((["'][a-z]*["'])\)/gm);
+        const regexElem = script.match(/createElement\((["'][\w|-]*["'])\)/gm);
 
         if (regexElem) {
             for (const str of regexElem) {
-                const match = str.match(/createElement\((["'][a-z]*["'])\)/);
+                const match = str.match(/createElement\((["'][\w|-]*["'])\)/);
 
                 if (match && match[1])
                     selectors.push(match[1].replace(/["']+/g, ""));

@@ -1,6 +1,5 @@
-
-require("./incude/obs");
 const JSMpeg = require("./incude/jsmpeg-player.umd.min");
+const vcMenu = require("./incude/vc-menu");
 const bf = require("../../../dist/backend/src/buffer-helpers");
 const jsMpegs = new Map();
 
@@ -30,10 +29,12 @@ function createSocket() {
             } catch { }
         }
         jsMpegs.clear();
-        const divs = document.querySelectorAll("div");
+        const cams = document.querySelectorAll(".cam");
 
-        for (const div of divs)
-            div.remove();
+        for (const cam of cams) {
+            if (!cam.classList.contains("demo"))
+                cam.remove();
+        }
 
         console.log("socket closed! trying to connect in 5s...");
         setTimeout(createSocket, 5000);
@@ -50,7 +51,15 @@ function createSocket() {
                 if (!jsMpegs.has(obj.data)) {
                     const div = document.createElement("div");
                     div.dataset.index = obj.data;
-                    div.classList.add("cam");
+                    div.classList.add("cam", "border-a");
+                    vcMenu(div);
+
+                    const span = document.createElement("span");
+                    span.classList.add("nickname");
+                    span.setAttribute("role", "textbox");
+                    span.setAttribute("contenteditable", "true");
+
+                    div.append(span);
                     container.append(div);
 
                     const jsMpeg = new JSMpeg.VideoElement(div, (isLocalehost() ? "ws://" : "wss://") + document.location.hostname, {
@@ -83,11 +92,11 @@ function createSocket() {
                         jsMpeg.destroy();
                     } catch { }
 
-                    const divs = document.querySelectorAll("div");
+                    const cams = document.querySelectorAll(".cam");
 
-                    for (const div of divs) {
-                        if (div.dataset.index == obj.data) {
-                            div.remove();
+                    for (const cam of cams) {
+                        if (cam.dataset.index == obj.data) {
+                            cam.remove();
                             console.log("Destroy JsMpeg player index =", obj.data);
                             break;
                         }
