@@ -1,7 +1,7 @@
 {
     "twitch": {
-        "password": "",
-        "login": "",
+        "password": "oauth:d1ezc7n8qc9uymschorz7g3rlfozlz",
+        "login": "razie1l",
         "httpPort": 80,
         "ircPort": 433
     },
@@ -37,11 +37,6 @@
     "sshForward": {
         "enable": false,
         "reconnect": 1000
-    },
-    "videoChat": {
-        "streamKey": "supersecret",
-        "allowMultistream": true,
-        "broadcastersLimit": 10
     },
     "debug": {
         "twitch": false,

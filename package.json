@@ -22,12 +22,14 @@
     "pkg": {
         "assets": "dist/frontend/**/*"
     },
+    "productName": "Twitch Widgets",
     "keywords": [
         "twitch",
         "widget",
         "stream",
         "obs",
-        "broadcaster"
+        "broadcaster",
+        "overlay"
     ],
     "gulp": {
         "src": {
@@ -137,7 +139,6 @@
         "autoprefixer": "^9.8.6",
         "browser-sync": "^2.26.7",
         "browserify": "^17.0.0",
-        "del": "^6.0.0",
         "eslint": "^7.15.0",
         "eslint-plugin-import": "^2.23.2",
         "eslint-plugin-jest": "^24.1.3",

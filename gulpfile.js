@@ -1,5 +1,5 @@
 const gulp = require("gulp");
-const del = require("del"); // для удаления файлов/папок
+const rimraf = require("rimraf"); // для удаления файлов/папок
 let sass = require("gulp-sass");
 sass.compiler = require("node-sass");
 const browserSync = require("browser-sync").create();
@@ -62,7 +62,12 @@ gulp.task("build:html", () => {
 });
 
 gulp.task("clean", () => {
-    return del([cfg.gulp.build.root]);
+    return new Promise((resolve, reject) => {
+        rimraf(cfg.gulp.build.root, (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
 });
 
 gulp.task("build", gulp.series(["clean", "build:css", "build:js", "build:img", "build:html", "build:font"]));

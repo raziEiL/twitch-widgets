@@ -8,5 +8,4 @@ node_modules
 package-lock.json
 pkg-release
 ssh_rsa*
-test
 *.bak

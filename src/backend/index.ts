@@ -1,7 +1,6 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import { createServer } from "http";
 
 process.on("uncaughtException", (err) => {
     fs.writeFileSync("crash.log", err.message);
@@ -9,24 +8,20 @@ process.on("uncaughtException", (err) => {
 
 import { log, logError } from "./src/helpers";
 import { vote, voteList, draw, say } from "./src/twitch";
-import * as ws from "./src/websocket";
 import { config } from "./src/pkg-config";
+// TODO: fix build
+/* import pkg from "../../package.json";
+
+log(`${pkg.productName}: ${pkg.version}`); */
 /*
 |==========================================================================
 | HTTP SERVER
 |==========================================================================
 */
 const app = express();
-const http = createServer(app);
-const socket = ws.createSocket(http);
 const PATH = path.join(__dirname, "..", "frontend");
 
 app.use(express.static(PATH));
-
-app.all("/", (req, res) => {
-    /* res.setHeader("Access-Control-Allow-Origin", "*"); */
-    socket.processMpegTs(req as ws.RequestExtend, res);
-});
 
 app.get("/vote/list", (req, res) => {
     if (vote) {
@@ -73,7 +68,7 @@ app.get("/api/draw/winner", (req, res) => {
         res.status(503).send("The prize drawing is not started yet!");
 });
 
-http.listen(process.env.PORT ? process.env.PORT : config.twitch.httpPort, () => {
+app.listen(config.twitch.httpPort, () => {
     log(`Local web server URL: http://localhost:${config.twitch.httpPort}`);
 });
 /*

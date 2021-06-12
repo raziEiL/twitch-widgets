@@ -34,7 +34,6 @@ export interface Config {
     commands: Commands;
     ngrok: NgrokConfig;
     sshForward: SshConfig;
-    videoChat: VideoChat;
 }
 
 export interface Debug {
@@ -68,12 +67,6 @@ export interface Twitch {
 export interface SshConfig {
     enable: boolean;
     reconnect: number;
-}
-
-export interface VideoChat {
-    streamKey: string;
-    allowMultistream: boolean;
-    broadcastersLimit: number;
 }
 
 // ngrok
